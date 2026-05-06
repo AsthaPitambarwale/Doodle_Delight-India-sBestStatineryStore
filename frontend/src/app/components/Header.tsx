@@ -131,9 +131,7 @@ export function Header({
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-3">
-              {/* User type toggle */}
-              <div className="hidden lg:flex bg-gray-100 rounded-full p-1 gap-1"></div>
+            <div className="hidden md:flex items-center gap-3 ml-auto">
 
               {/* Wishlist */}
               <button
