@@ -39,7 +39,7 @@ export default function CheckoutPage({
       onClose?.();
 
       navigate("/");
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [orderSuccess]);
@@ -276,19 +276,9 @@ export default function CheckoutPage({
             </p>
 
             <p className="text-sm text-gray-400">
-              Redirecting to home in 20 seconds...
+              Redirecting to home in 5 seconds...
             </p>
           </div>
-          <button
-            onClick={() => {
-              onClearCart?.();
-              onClose?.();
-              navigate("/");
-            }}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Go to Home
-          </button>
         </div>
       )}
       {toast && (
