@@ -132,29 +132,6 @@ export function Header({
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
-              {/* User type toggle */}
-              <div className="hidden lg:flex bg-gray-100 rounded-full p-1 gap-1">
-                <button
-                  onClick={() => onUserTypeChange("retail")}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    userType === "retail"
-                      ? "bg-orange-500 text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  Retail
-                </button>
-                <button
-                  onClick={() => onUserTypeChange("wholesale")}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    userType === "wholesale"
-                      ? "bg-orange-500 text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  Wholesale
-                </button>
-              </div>
 
               {/* Wishlist */}
               <button
