@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
 
@@ -17,6 +18,7 @@ export default function CheckoutPage({
     message: string;
     type: "success" | "error";
   } | null>(null);
+  const navigate = useNavigate();
 
   const showToast = (
     message: string,
@@ -33,12 +35,15 @@ export default function CheckoutPage({
     if (!orderSuccess) return;
 
     const timer = setTimeout(() => {
-      if (onClearCart) onClearCart();
-      if (onClose) onClose();
-    }, 20000);
+      onClearCart?.();
+      onClose?.();
+
+      navigate("/");
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [orderSuccess]);
+
   // FIXED PRICE LOGIC
   const subtotal = items.reduce((sum: number, item: any) => {
     const price =
@@ -76,21 +81,18 @@ export default function CheckoutPage({
       order_id: order.id,
 
       handler: async (response: any) => {
-        const verify = await fetch(
-          `${BASE_URL}/payment/verify-payment`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...response,
-              userId: user._id,
-              cartItems: items,
-              totalAmount: total,
-            }),
+        const verify = await fetch(`${BASE_URL}/payment/verify-payment`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            ...response,
+            userId: user._id,
+            cartItems: items,
+            totalAmount: total,
+          }),
+        });
 
         const data = await verify.json();
 
@@ -277,6 +279,16 @@ export default function CheckoutPage({
               Redirecting to home in 20 seconds...
             </p>
           </div>
+          <button
+            onClick={() => {
+              onClearCart?.();
+              onClose?.();
+              navigate("/");
+            }}
+            className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+          >
+            Go to Home
+          </button>
         </div>
       )}
       {toast && (
