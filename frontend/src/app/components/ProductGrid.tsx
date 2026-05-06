@@ -22,7 +22,7 @@ export function ProductGrid({
   isInWishlist,
   title,
 }: ProductGridProps) {
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const visibleProducts = useMemo(() => {
     return Array.isArray(products) ? products.slice(0, visibleCount) : [];
@@ -65,7 +65,7 @@ export function ProductGrid({
       {visibleCount < products.length && (
         <div className="flex justify-center mt-8">
           <button
-            onClick={() => setVisibleCount((prev) => prev + 8)}
+            onClick={() => setVisibleCount((prev) => prev + 9)}
             className="
               px-6 py-3 rounded-xl
               bg-orange-500 text-white
