@@ -8,8 +8,8 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 > (Add your links here after deployment)
 
-* Frontend: [https://](https://)
-* Backend: [https://](https://)
+* Frontend: [https://doodle-delight-india-s-best-statine.vercel.app](https://doodle-delight-india-s-best-statine.vercel.app)
+* Backend: [https://doodle-delight-india-sbeststatinerystore.onrender.com](https://doodle-delight-india-sbeststatinerystore.onrender.com)
 * Admin Panel: /admin route
 {For admin login details - contact me on asthapitambarwale@gamil.com}
 
@@ -232,6 +232,7 @@ RAZORPAY_KEY_ID=rzp_test_your-key
 RAZORPAY_KEY_SECRET=Your_secret_key
 ```
 
+Add cors in server.js your frontend link.
 ---
 
 # 🚀 How to run on localhost
