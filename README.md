@@ -11,7 +11,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 * Frontend: [https://doodle-delight-india-s-best-statine.vercel.app](https://doodle-delight-india-s-best-statine.vercel.app)
 * Backend: [https://doodle-delight-india-sbeststatinerystore.onrender.com](https://doodle-delight-india-sbeststatinerystore.onrender.com)
 * Admin Panel: /admin route
-{For admin login details - contact me on asthapitambarwale@gamil.com}
+{For admin login details - contact me on asthapitambarwale@gmail.com}
 
 ---
 
@@ -296,8 +296,8 @@ node server.js
 
 **Your Name**
 
-* GitHub: [https://github.com/](https://github.com/)
-* LinkedIn: [https://linkedin.com/in/](https://linkedin.com/in/)
+* GitHub: [https://github.com/AsthaPitambarwale](https://github.com/AsthaPitambarwale)
+* LinkedIn: [https://linkedin.com/in/astha-pitambarwale-a32028316](https://linkedin.com/in/astha-pitambarwale-a32028316)
 
 ---
 
