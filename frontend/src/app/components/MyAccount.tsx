@@ -123,9 +123,13 @@ export function MyAccount({
 
       <div className="fixed inset-0 z-50 overflow-y-auto animate-in slide-in-from-right duration-300">
         <div className="flex min-h-full items-end md:items-center justify-center p-0 md:p-4">
-          <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-5xl h-[100vh] md:h-[90vh] md:max-h-[90vh] overflow-hidden flex flex-col">
+          <div
+            className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-5xl 
+h-[100dvh] md:h-[90vh] md:max-h-[90vh] 
+flex flex-col overflow-hidden"
+          >
             {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6">
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 md:p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h2 className="text-2xl font-bold mb-1">My Account</h2>
@@ -158,10 +162,10 @@ export function MyAccount({
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 px-3 md:px-4 py-2 bg-gray-50 border-b border-gray-200 overflow-x-auto whitespace-nowrap">
+            <div className="flex gap-2 px-3 md:px-4 py-2 bg-gray-50 border-b border-gray-200 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
                   activeTab === "overview"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
@@ -172,7 +176,7 @@ export function MyAccount({
               </button>
               <button
                 onClick={() => setActiveTab("orders")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
                   activeTab === "orders"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
@@ -183,7 +187,7 @@ export function MyAccount({
               </button>
               <button
                 onClick={() => setActiveTab("addresses")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
                   activeTab === "addresses"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
@@ -194,7 +198,7 @@ export function MyAccount({
               </button>
               <button
                 onClick={() => setActiveTab("wishlist")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
                   activeTab === "wishlist"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
@@ -205,7 +209,7 @@ export function MyAccount({
               </button>
               <button
                 onClick={() => setActiveTab("settings")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
                   activeTab === "settings"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
@@ -217,7 +221,7 @@ export function MyAccount({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
+            <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-6">
               {activeTab === "overview" && (
                 <div className="space-y-6">
                   {/* Stats */}
@@ -253,7 +257,7 @@ export function MyAccount({
 
                   {/* Quick Actions */}
                   <div>
-                    <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
+                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => setActiveTab("orders")}
@@ -303,7 +307,7 @@ export function MyAccount({
 
                   {/* User Info */}
                   <div>
-                    <h3 className="font-bold text-lg mb-4">
+                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">
                       Account Information
                     </h3>
                     <div className="bg-gray-50 rounded-xl p-4 space-y-3">
@@ -356,7 +360,7 @@ export function MyAccount({
 
               {activeTab === "orders" && (
                 <div>
-                  <h3 className="font-bold text-lg mb-4">Order History</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Order History</h3>
 
                   {!orders ? (
                     <p>Loading...</p>
@@ -381,7 +385,7 @@ export function MyAccount({
                             onClick={() => setSelectedOrder(order)}
                             className="bg-white border-2 border-gray-200 rounded-xl p-3 md:p-4 hover:border-orange-500 transition-colors cursor-pointer"
                           >
-                            <div className="flex flex-col gap-2 mb-3">
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-3">
                               <div className="flex justify-between items-start gap-2">
                                 <div className="min-w-0">
                                   <p className="font-bold text-gray-900 break-words">
@@ -416,7 +420,7 @@ export function MyAccount({
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-2 md:flex gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex gap-2">
                               {/* TRACK */}
                               <button
                                 onClick={(e) => {
@@ -479,7 +483,7 @@ export function MyAccount({
 
               {activeTab === "wishlist" && (
                 <div>
-                  <h3 className="font-bold text-lg mb-4">
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">
                     My Wishlist ({wishlistItems.length} items)
                   </h3>
                   {wishlistItems.length === 0 ? (
@@ -502,7 +506,7 @@ export function MyAccount({
                           <img
                             src={item.image}
                             alt={item.name}
-                            className="w-20 h-20 object-cover rounded-lg"
+                            className="w-24 h-24 object-cover rounded-xl border"
                           />
                           <div className="flex-1">
                             <h4 className="font-bold text-gray-900 mb-1">
@@ -527,7 +531,7 @@ export function MyAccount({
 
               {activeTab === "settings" && (
                 <div>
-                  <h3 className="font-bold text-lg mb-4">Account Settings</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Account Settings</h3>
                   <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
                     {!isEditing ? (
                       <div className="space-y-4">
