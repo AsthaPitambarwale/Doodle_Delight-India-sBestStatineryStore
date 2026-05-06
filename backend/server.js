@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://",
+      "https://doodle-delight-india-s-best-statine.vercel.app/",
     ],
     credentials: true,
   }),
