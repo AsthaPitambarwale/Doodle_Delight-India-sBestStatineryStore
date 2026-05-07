@@ -177,6 +177,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 * React Router DOM
 * Context API / State management
 * Firebase (Goodle Authentication Login)
+* NodeMailer Crypto(password reset)
 
 ## Backend
 

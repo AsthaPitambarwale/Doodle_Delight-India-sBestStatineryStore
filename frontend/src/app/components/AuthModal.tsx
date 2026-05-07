@@ -1,8 +1,10 @@
 import { X, Mail, Lock, User, Phone, Building, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
-import { signInWithPopup} from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 import { FcGoogle } from "react-icons/fc";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -119,6 +121,36 @@ export function AuthModal({
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!loginData.email.trim()) {
+      showToast("Please enter your email first", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginData.email.trim(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        showToast("Password reset email sent", "success");
+      } else {
+        showToast(data.message || "Failed to send email", "error");
+      }
+    } catch (error) {
+      console.log(error);
+      showToast("Server error", "error");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -224,7 +256,8 @@ export function AuthModal({
                     </label>
                     <button
                       type="button"
-                      className="text-orange-600 font-semibold hover:text-orange-700"
+                      onClick={handlePasswordReset}
+                      className="text-orange-600 font-semibold hover:text-orange-700 transition-colors"
                     >
                       Forgot Password?
                     </button>
@@ -237,6 +270,7 @@ export function AuthModal({
                     Login to Account
                   </button>
                   <button
+                    type="button"
                     onClick={handleGoogleLogin}
                     className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all"
                   >
