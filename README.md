@@ -222,6 +222,11 @@ backend/
 
 ```env
 VITE_BASE_URL=https://your-backend-url.com/api
+EMAIL_USER=your_email@gmail.com
+VITE_FIREBASE_API_KEY=api_key_firebase
+VITE_FIREBASE_AUTH_DOMAIN=app_domain_firebase
+VITE_FIREBASE_PROJECT_ID=project_id_firebase
+VITE_FIREBASE_APP_ID=app_ID_firebase
 ```
 
 ## Backend (.env)
@@ -232,6 +237,9 @@ JWT_SECRET=your_secret
 PORT=5000
 RAZORPAY_KEY_ID=rzp_test_your-key
 RAZORPAY_KEY_SECRET=Your_secret_key
+EMAIL_PASS=you_app_password
+CLIENT_URL=http://localhost:5173  //for localhost
+CLIENT_URL=http://you-vercel.com  //after deploy your frontend link
 ```
 
 Add cors in server.js your frontend link.
