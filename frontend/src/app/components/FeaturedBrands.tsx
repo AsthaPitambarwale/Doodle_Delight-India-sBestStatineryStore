@@ -31,8 +31,8 @@ export function FeaturedBrands() {
   return (
     <div className="mb-10 md:mb-14 relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-50 via-white to-red-50 border border-orange-100 p-4 sm:p-6 md:p-8 shadow-xl">
       {/* Glow Background */}
-      <div className="absolute top-0 left-0 w-40 h-40 bg-orange-400/20 blur-3xl rounded-full" />
-      <div className="absolute bottom-0 right-0 w-52 h-52 bg-red-400/20 blur-3xl rounded-full" />
+      <div className="absolute top-0 left-0 w-40 h-40 bg-orange-400/20 blur-3xl rounded-full animate-pulse" />
+      <div className="absolute bottom-0 right-0 w-52 h-52 bg-red-400/20 blur-3xl rounded-full animate-pulse" />
 
       {/* Header */}
       <div className="relative flex items-center gap-3 mb-6 md:mb-8">
@@ -63,13 +63,36 @@ export function FeaturedBrands() {
               p-4 md:p-5
               border border-white/60
               shadow-md
-              hover:shadow-2xl hover:shadow-orange-500/20
-              hover:-translate-y-2
               transition-all duration-300
+              hover:-translate-y-2
+              hover:shadow-2xl hover:shadow-orange-500/30
+              active:scale-95
+              active:border-orange-400
+              active:shadow-2xl active:shadow-orange-500/30
             "
           >
-            {/* Glow Hover */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-orange-100/40 to-red-100/40 blur-xl" />
+            {/* Glow Effect */}
+            <div
+              className="
+                absolute inset-0 opacity-0
+                group-hover:opacity-100
+                group-active:opacity-100
+                transition-opacity duration-300
+                bg-gradient-to-br from-orange-200/40 to-red-200/40
+                blur-xl
+              "
+            />
+
+            {/* Animated Border Glow */}
+            <div
+              className="
+                absolute inset-0 rounded-2xl
+                border border-transparent
+                group-hover:border-orange-300
+                group-active:border-orange-300
+                transition-all duration-300
+              "
+            />
 
             <div className="relative flex flex-col items-center justify-center">
               <img
@@ -77,12 +100,22 @@ export function FeaturedBrands() {
                 alt={brand.name}
                 className="
                   h-10 md:h-14 w-full object-contain
-                  grayscale group-hover:grayscale-0
+                  grayscale
+                  group-hover:grayscale-0
+                  group-active:grayscale-0
                   transition-all duration-300
                 "
               />
 
-              <p className="mt-3 text-xs md:text-sm font-semibold text-gray-700 group-hover:text-orange-600 transition-colors text-center">
+              <p
+                className="
+                  mt-3 text-xs md:text-sm font-semibold
+                  text-gray-700
+                  group-hover:text-orange-600
+                  group-active:text-orange-600
+                  transition-colors text-center
+                "
+              >
                 {brand.name}
               </p>
             </div>
