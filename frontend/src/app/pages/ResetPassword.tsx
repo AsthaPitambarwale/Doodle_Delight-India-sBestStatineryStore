@@ -11,15 +11,30 @@ export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success",
+  ) => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const handleReset = async () => {
     if (!password || !confirmPassword) {
-      alert("Fill all fields");
+      showToast("Fill all fields" , "error");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      showToast("Passwords do not match", "error");
       return;
     }
 
@@ -38,15 +53,15 @@ export default function ResetPassword() {
       const data = await res.json();
 
       if (data.success) {
-        alert("Password updated successfully");
+        showToast("Password updated successfully", "success");
 
         navigate("/");
       } else {
-        alert(data.message);
+        showToast(data.message);
       }
     } catch (err) {
       console.log(err);
-      alert("Server error");
+      showToast("Server error" , "error");
     } finally {
       setLoading(false);
     }
@@ -87,6 +102,20 @@ export default function ResetPassword() {
           </button>
         </div>
       </div>
+      {toast && (
+        <div className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] md:w-auto">
+          <div
+            className={`px-6 py-3 rounded-xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top
+      ${
+        toast.type === "success"
+          ? "bg-green-50 text-green-700 border-green-200"
+          : "bg-red-50 text-red-700 border-red-200"
+      }`}
+          >
+            <span className="font-semibold">{toast.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
