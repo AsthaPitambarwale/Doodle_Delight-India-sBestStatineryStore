@@ -104,10 +104,10 @@ router.put("/return/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    if (order.status !== "paid") {
+    if (!["paid", "delivered"].includes(order.status)) {
       return res.json({
         success: false,
-        message: "Only paid orders can be returned",
+        message: "Only paid or delivered orders are allowed",
       });
     }
 

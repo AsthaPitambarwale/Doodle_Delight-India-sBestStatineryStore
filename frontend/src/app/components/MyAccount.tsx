@@ -100,7 +100,7 @@ export function MyAccount({
       const data = await res.json();
 
       if (data.success) {
-        showToast("Return requested", "success");
+        showToast("Refund request submitted", "success");
 
         onRefreshOrders();
       } else {
@@ -165,55 +165,50 @@ flex flex-col overflow-hidden"
             <div className="flex gap-2 px-3 md:px-4 py-2 bg-gray-50 border-b border-gray-200 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
-                  activeTab === "overview"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "overview"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 <User className="w-4 h-4" />
                 Overview
               </button>
               <button
                 onClick={() => setActiveTab("orders")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
-                  activeTab === "orders"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "orders"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 <Package className="w-4 h-4" />
                 Orders ({orders?.length || 0})
               </button>
               <button
                 onClick={() => setActiveTab("addresses")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
-                  activeTab === "addresses"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "addresses"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 <MapPin className="w-4 h-4" />
                 Addresses
               </button>
               <button
                 onClick={() => setActiveTab("wishlist")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
-                  activeTab === "wishlist"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "wishlist"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 <Heart className="w-4 h-4" />
                 Wishlist ({wishlistItems.length})
               </button>
               <button
                 onClick={() => setActiveTab("settings")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
-                  activeTab === "settings"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "settings"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 <Settings className="w-4 h-4" />
                 Settings
@@ -257,7 +252,9 @@ flex flex-col overflow-hidden"
 
                   {/* Quick Actions */}
                   <div>
-                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Quick Actions</h3>
+                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">
+                      Quick Actions
+                    </h3>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => setActiveTab("orders")}
@@ -360,7 +357,9 @@ flex flex-col overflow-hidden"
 
               {activeTab === "orders" && (
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Order History</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">
+                    Order History
+                  </h3>
 
                   {!orders ? (
                     <p>Loading...</p>
@@ -394,14 +393,27 @@ flex flex-col overflow-hidden"
                                   <p className="text-sm text-gray-600">
                                     {order.createdAt
                                       ? new Date(
-                                          order.createdAt,
-                                        ).toLocaleDateString()
+                                        order.createdAt,
+                                      ).toLocaleDateString()
                                       : "N/A"}
                                   </p>
                                 </div>
 
-                                <span className="shrink-0 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold whitespace-nowrap">
-                                  {order.status || "Processing"}
+                                <span
+                                  className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap
+    ${order.status === "cancelled"
+                                      ? "bg-red-100 text-red-700"
+                                      : order.status === "refund_requested"
+                                        ? "bg-yellow-100 text-yellow-700"
+                                        : order.status === "delivered"
+                                          ? "bg-green-100 text-green-700"
+                                          : "bg-blue-100 text-blue-700"
+                                    }
+  `}
+                                >
+                                  {order.status === "refund_requested"
+                                    ? "Refund Requested"
+                                    : order.status || "Processing"}
                                 </span>
                               </div>
                             </div>
@@ -456,7 +468,9 @@ flex flex-col overflow-hidden"
                                   }}
                                   className="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 font-semibold text-sm transition-all"
                                 >
-                                  Return
+                                  {order.status === "delivered"
+                                    ? "Return"
+                                    : "Refund Request"}
                                 </button>
                               )}
 
@@ -531,7 +545,9 @@ flex flex-col overflow-hidden"
 
               {activeTab === "settings" && (
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">Account Settings</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800">
+                    Account Settings
+                  </h3>
                   <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
                     {!isEditing ? (
                       <div className="space-y-4">
@@ -709,11 +725,10 @@ flex flex-col overflow-hidden"
         <div className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] md:w-auto">
           <div
             className={`px-6 py-3 rounded-xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top
-      ${
-        toast.type === "success"
-          ? "bg-green-50 text-green-700 border-green-200"
-          : "bg-red-50 text-red-700 border-red-200"
-      }`}
+      ${toast.type === "success"
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-red-50 text-red-700 border-red-200"
+              }`}
           >
             <span className="font-semibold">{toast.message}</span>
           </div>
