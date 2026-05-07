@@ -238,8 +238,8 @@ PORT=5000
 RAZORPAY_KEY_ID=rzp_test_your-key
 RAZORPAY_KEY_SECRET=Your_secret_key
 EMAIL_PASS=you_app_password
-CLIENT_URL=http://localhost:5173  //for localhost
-CLIENT_URL=http://you-vercel.com  //after deploy your frontend link
+FRONTEND_URL=http://localhost:5173  //for localhost
+FRONTEND_URL=http://you-vercel.com  //after deploy your frontend link
 ```
 
 Add cors in server.js your frontend link.
