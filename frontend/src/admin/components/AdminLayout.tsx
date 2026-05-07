@@ -1,6 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function AdminLayout({ children, active, setActive }: any) {
+export default function AdminLayout({
+  children,
+  active,
+  setActive,
+  onLogout,
+}: any) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
@@ -10,6 +16,22 @@ export default function AdminLayout({ children, active, setActive }: any) {
     { key: "orders", label: "Orders" },
     { key: "users", label: "Users" },
   ];
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  sessionStorage.clear();
+
+  if (onLogout) {
+    onLogout();
+  }
+
+  navigate("/", { replace: true });
+
+  window.location.reload();
+};
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50">
@@ -92,8 +114,17 @@ export default function AdminLayout({ children, active, setActive }: any) {
         </nav>
 
         {/* FOOTER */}
-        <div className="p-4 border-t text-xs text-gray-400">
-          v1.0 Admin System
+        <div className="p-4 border-t space-y-3">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-semibold transition-all"
+          >
+            Logout
+          </button>
+
+          <div className="text-xs text-gray-400 text-center">
+            v1.0 Admin System
+          </div>
         </div>
       </aside>
 
