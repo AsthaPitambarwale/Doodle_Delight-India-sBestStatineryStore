@@ -56,7 +56,7 @@ router.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "User not found",
       });
@@ -65,10 +65,11 @@ router.post("/forgot-password", async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString("hex");
 
     user.resetToken = resetToken;
-
-    user.resetTokenExpiry = Date.now() + 3600000;
+    user.resetTokenExpiry = Date.now() + 1000 * 60 * 15;
 
     await user.save();
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -78,19 +79,14 @@ router.post("/forgot-password", async (req, res) => {
       },
     });
 
-    const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: user.email,
+      to: email,
       subject: "Password Reset",
       html: `
         <h2>Password Reset</h2>
-        <p>Click below link to reset password:</p>
-
-        <a href="${resetURL}">
-          Reset Password
-        </a>
+        <p>Click below to reset password:</p>
+        <a href="${resetLink}">${resetLink}</a>
       `,
     });
 
@@ -98,8 +94,8 @@ router.post("/forgot-password", async (req, res) => {
       success: true,
       message: "Reset email sent",
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
 
     res.status(500).json({
       success: false,

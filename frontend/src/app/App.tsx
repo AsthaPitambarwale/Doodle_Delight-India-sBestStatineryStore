@@ -33,6 +33,7 @@ import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import AdminRoute from "./routes/AdminRoute";
 import AdminApp from "../admin/AdminApp";
+import ResetPassword from "../app/pages/ResetPassword";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
 
@@ -882,6 +883,7 @@ export default function App() {
             </AdminRoute>
           }
         />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
 
       {toast && (
