@@ -29,7 +29,7 @@ export default function ResetPassword() {
 
   const handleReset = async () => {
     if (!password || !confirmPassword) {
-      showToast("Fill all fields" , "error");
+      showToast("Fill all fields", "error");
       return;
     }
 
@@ -61,7 +61,7 @@ export default function ResetPassword() {
       }
     } catch (err) {
       console.log(err);
-      showToast("Server error" , "error");
+      showToast("Server error", "error");
     } finally {
       setLoading(false);
     }
