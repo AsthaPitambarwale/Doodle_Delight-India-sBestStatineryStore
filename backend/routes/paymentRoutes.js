@@ -2,7 +2,8 @@ const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Order = require("../models/Order");
-
+const Notification = require("../models/Notification");
+const sendEmail = require("../utils/sendEmail");
 const router = express.Router();
 
 const razorpay = new Razorpay({
@@ -46,6 +47,7 @@ router.post("/verify-payment", async (req, res) => {
       userId,
       cartItems,
       totalAmount,
+      email,
     } = req.body;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -61,7 +63,7 @@ router.post("/verify-payment", async (req, res) => {
         .json({ success: false, message: "Invalid signature" });
     }
 
-    await Order.create({
+    const order = await Order.create({
       userId,
       items: cartItems,
       totalAmount,
@@ -71,17 +73,50 @@ router.post("/verify-payment", async (req, res) => {
       status: "paid",
     });
 
-    res.json({ success: true });
+    await Notification.create({
+      userId,
+      title: "Order Confirmed",
+      message: `Your order ${order._id} placed successfully`,
+      read: false,
+      createdAt: new Date(),
+    });
+
+    if (email) {
+      await sendEmail({
+        to: email,
+        subject: "Order Confirmed ✅",
+        html: `
+          <div style="font-family:sans-serif;padding:20px">
+            <h2>Payment Successful 🎉</h2>
+
+            <p>Your order has been placed successfully.</p>
+
+            <p>
+              <strong>Order ID:</strong> ${order._id}
+            </p>
+
+            <p>
+              <strong>Amount Paid:</strong> ₹${totalAmount}
+            </p>
+
+            <br/>
+
+            <p>Thank you for shopping with Doodle Delight ❤️</p>
+          </div>
+        `,
+      });
+    }
+
+    res.json({ success: true, order });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// COD ORDER
 router.post("/cod-order", async (req, res) => {
   try {
-    const { userId, cartItems, totalAmount } = req.body;
+    const { userId, cartItems, totalAmount, email } = req.body;
 
     const order = await Order.create({
       userId,
@@ -91,8 +126,45 @@ router.post("/cod-order", async (req, res) => {
       status: "placed",
     });
 
+    // Notification
+    await Notification.create({
+      userId,
+      title: "Order Placed (COD)",
+      message: `Your COD order ${order._id} has been placed successfully`,
+      read: false,
+      createdAt: new Date(),
+    });
+
+    // Email
+    if (email) {
+      await sendEmail({
+        to: email,
+        subject: "COD Order Placed 📦",
+        html: `
+          <div style="font-family:sans-serif;padding:20px">
+            <h2>Order Placed Successfully 🎉</h2>
+
+            <p>Your Cash on Delivery order has been placed.</p>
+
+            <p>
+              <strong>Order ID:</strong> ${order._id}
+            </p>
+
+            <p>
+              <strong>Total Amount:</strong> ₹${totalAmount}
+            </p>
+
+            <br/>
+
+            <p>Thank you for shopping with Doodle Delight ❤️</p>
+          </div>
+        `,
+      });
+    }
+
     res.json({ success: true, order });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });

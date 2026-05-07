@@ -7,7 +7,9 @@ import {
   Percent,
   Phone,
   Mail,
+  Bell,
 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 interface HeaderProps {
   cartCount: number;
@@ -22,6 +24,7 @@ interface HeaderProps {
   user: any;
   onBulkOrderClick: () => void;
   onAllProductsClick: () => void;
+  notifications?: any[];
 }
 
 export function Header({
@@ -33,11 +36,27 @@ export function Header({
   onSearchChange,
   onCategoryClick,
   userType,
-  onUserTypeChange,
   user,
   onBulkOrderClick,
   onAllProductsClick,
+  notifications = [],
 }: HeaderProps) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const unreadCount =
+    notifications?.filter((n) => n?.read === false).length || 0;
+
+  useEffect(() => {
+    const handleClickOutside = (e: any) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       {/* Top promotional bar */}
@@ -75,7 +94,7 @@ export function Header({
       {/* Main header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3 md:py-4">
-          {/* 🔥 Responsive Flex */}
+          {/* Responsive Flex */}
           <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
             {/* Row 1 (Logo + icons on mobile) */}
             <div className="flex items-center justify-between w-full md:w-auto">
@@ -92,27 +111,94 @@ export function Header({
               </button>
 
               {/* Mobile Icons */}
-              <div className="flex md:hidden items-center gap-3">
-                <button onClick={onWishlistClick} className="relative">
-                  <Heart className="w-5 h-5" />
-                  {wishlistCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs px-1 rounded-full">
-                      {wishlistCount}
-                    </span>
+              <div className="flex md:hidden items-center gap-4 relative">
+                {/* Notifications */}
+                <div
+                  ref={wrapperRef}
+                  className="relative flex flex-col items-center cursor-pointer"
+                  onClick={() => setOpen(!open)}
+                >
+                  <div className="relative">
+                    <Bell className="w-6 h-6 text-gray-700" />
+
+                    {unreadCount > 0 && !open && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* MOBILE DROPDOWN */}
+                  {open && (
+                    <div className="absolute right-0 top-12 w-72 bg-white border border-gray-200 shadow-2xl rounded-xl z-50 overflow-hidden">
+                      <div className="p-3 font-bold border-b bg-gray-50 text-gray-800">
+                        Notifications
+                      </div>
+
+                      <div className="max-h-80 overflow-y-auto">
+                        {!notifications || notifications.length === 0 ? (
+                          <div className="p-4 text-sm text-gray-500 text-center">
+                            No notifications
+                          </div>
+                        ) : (
+                          notifications.map((n, i) => (
+                            <div
+                              key={i}
+                              className="p-3 border-b hover:bg-gray-50 transition"
+                            >
+                              <p className="font-semibold text-sm text-gray-800">
+                                {n.title}
+                              </p>
+
+                              <p className="text-sm text-gray-600 mt-1">
+                                {n.message}
+                              </p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
                   )}
+                </div>
+
+                {/* Wishlist */}
+                <button
+                  onClick={onWishlistClick}
+                  className="relative flex flex-col items-center group"
+                >
+                  <div className="relative">
+                    <Heart className="w-6 h-6 text-gray-700" />
+
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </div>
                 </button>
 
-                <button onClick={onAccountClick}>
-                  <User className="w-5 h-5" />
+                {/* Account */}
+                <button
+                  onClick={onAccountClick}
+                  className="flex flex-col items-center"
+                >
+                  <User className="w-6 h-6 text-gray-700" />
                 </button>
 
-                <button onClick={onCartClick} className="relative">
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
-                      {cartCount}
-                    </span>
-                  )}
+                {/* Cart */}
+                <button
+                  onClick={onCartClick}
+                  className="relative flex flex-col items-center"
+                >
+                  <div className="relative">
+                    <ShoppingCart className="w-6 h-6 text-gray-700" />
+
+                    {cartCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold animate-pulse">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
                 </button>
               </div>
             </div>
@@ -131,29 +217,88 @@ export function Header({
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-3 ml-auto">
+            <div className="hidden md:flex items-center gap-6 ml-auto">
+              {/* Notifications */}
+              <div
+                ref={wrapperRef}
+                className="relative flex flex-col items-center cursor-pointer"
+                onClick={() => setOpen(!open)}
+              >
+                <div className="relative">
+                  <Bell className="w-6 h-6 text-gray-700 hover:text-orange-500 transition" />
+
+                  {unreadCount > 0 && !open && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-xs font-semibold mt-1 text-gray-700">
+                  Notifications
+                </span>
+
+                {/* DESKTOP DROPDOWN */}
+                {open && (
+                  <div className="absolute right-0 top-14 w-80 bg-white border border-gray-200 shadow-2xl rounded-xl z-50 overflow-hidden">
+                    <div className="p-3 font-bold border-b bg-gray-50 text-gray-800">
+                      Notifications
+                    </div>
+
+                    <div className="max-h-96 overflow-y-auto">
+                      {!notifications || notifications.length === 0 ? (
+                        <div className="p-4 text-sm text-gray-500 text-center">
+                          No notifications
+                        </div>
+                      ) : (
+                        notifications.map((n, i) => (
+                          <div
+                            key={i}
+                            className="p-3 border-b hover:bg-gray-50 transition"
+                          >
+                            <p className="font-semibold text-sm text-gray-800">
+                              {n.title}
+                            </p>
+
+                            <p className="text-sm text-gray-600 mt-1">
+                              {n.message}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Wishlist */}
               <button
                 onClick={onWishlistClick}
-                className="relative flex flex-col items-center"
+                className="relative flex flex-col items-center group"
               >
-                <Heart className="w-6 h-6" />
-                <span className="text-xs">Wishlist</span>
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs min-w-[20px] h-5 rounded-full flex items-center justify-center px-1.5 font-semibold">
-                    {wishlistCount}
-                  </span>
-                )}
+                <div className="relative">
+                  <Heart className="w-6 h-6 text-gray-700 group-hover:text-pink-500 transition" />
+
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-xs font-semibold mt-1 text-gray-700">
+                  Wishlist
+                </span>
               </button>
 
               {/* Account */}
               <button
                 onClick={onAccountClick}
-                className="flex flex-col items-center"
+                className="flex flex-col items-center group"
               >
-                <User className="w-6 h-6" />
-                <span className="text-xs">
+                <User className="w-6 h-6 text-gray-700 group-hover:text-orange-500 transition" />
+
+                <span className="text-xs font-semibold mt-1 text-gray-700">
                   {user?.name ? user.name.split(" ")[0] : "Account"}
                 </span>
               </button>
@@ -161,15 +306,21 @@ export function Header({
               {/* Cart */}
               <button
                 onClick={onCartClick}
-                className="relative flex flex-col items-center"
+                className="relative flex flex-col items-center group"
               >
-                <ShoppingCart className="w-6 h-6" />
-                <span className="text-xs">Cart</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs min-w-[20px] h-5 rounded-full flex items-center justify-center px-1.5 font-semibold animate-pulse">
-                    {cartCount}
-                  </span>
-                )}
+                <div className="relative">
+                  <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-orange-500 transition" />
+
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold animate-pulse">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-xs font-semibold mt-1 text-gray-700">
+                  Cart
+                </span>
               </button>
             </div>
           </div>

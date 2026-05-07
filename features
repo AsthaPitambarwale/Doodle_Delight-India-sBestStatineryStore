@@ -97,17 +97,10 @@ These make your project “portfolio-level impressive”:
 “Frequently bought together”
 “Recommended for you”
 Based on cart history
-📈 Analytics tracking
-Track:
-clicks
-product views
-cart adds
-Build simple recommendation logic
-🔔 Notifications system
-Email / SMS:
-order confirmation
-delivery updates
-In-app notifications
+; Email / SMS:
+; order confirmation
+; delivery updates
+; In-app notifications
 💬 Chat support (optional but powerful)
 Basic chatbot / support form
 Admin replies

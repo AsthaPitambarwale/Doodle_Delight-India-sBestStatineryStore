@@ -32,6 +32,7 @@ app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/address", require("./routes/addressRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 app.get("/", (req, res) => {
   res.send("API Running...");

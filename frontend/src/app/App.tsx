@@ -74,7 +74,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<string | null>(null);
   const [trackOrderId, setTrackOrderId] = useState<string | null>(null);
   const [invoiceOrderId, setInvoiceOrderId] = useState<string | null>(null);
-
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -345,6 +345,14 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    fetch(`${BASE_URL}/notifications/${user._id}`)
+      .then((res) => res.json())
+      .then(setNotifications);
+  }, [user]);
 
   // AUTH (REAL)
   const handleLogin = async (
@@ -693,6 +701,7 @@ export default function App() {
                     onUserTypeChange={setUserType}
                     user={user}
                     onBulkOrderClick={() => setIsBulkOrderOpen(true)}
+                    notifications={notifications}
                   />
 
                   {showAllProducts ? (
