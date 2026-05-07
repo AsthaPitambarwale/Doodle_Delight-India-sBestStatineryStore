@@ -1,6 +1,6 @@
 import { X, Mail, Lock, User, Phone, Building, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup} from "firebase/auth";
 import { auth, provider } from "../../firebase";
 import { FcGoogle } from "react-icons/fc";
 
