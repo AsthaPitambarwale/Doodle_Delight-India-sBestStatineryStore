@@ -1,5 +1,8 @@
 import { X, Mail, Lock, User, Phone, Building, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../../firebase";
+import { FcGoogle } from "react-icons/fc";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -82,6 +85,38 @@ export function AuthModal({
     console.log("Sending signup:", signupData);
 
     onSignup(signupData);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+
+      const googleUser = result.user;
+
+      const res = await fetch(`${BASE_URL}/auth/google-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: googleUser.displayName,
+          email: googleUser.email,
+          image: googleUser.photoURL,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (!isOpen) return null;
@@ -200,6 +235,13 @@ export function AuthModal({
                     className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-red-600 font-bold shadow-lg hover:shadow-xl transition-all transform active:scale-95"
                   >
                     Login to Account
+                  </button>
+                  <button
+                    onClick={handleGoogleLogin}
+                    className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+                  >
+                    <FcGoogle className="text-2xl" />
+                    Continue with Google
                   </button>
                 </form>
               )}
