@@ -56,8 +56,8 @@ export function ProductDetail({
           { label: "Blue Ink", price: product.price },
           { label: "Black Ink", price: product.price },
           { label: "Red Ink", price: product.price },
-          { label: "Pack of 5", price: product.price * 4 },
-          { label: "Pack of 10", price: product.price * 8 },
+          { label: "Pack of 100", price: product.price * 4 },
+          { label: "Pack of 200", price: product.price * 8 },
         ];
 
       case "art-supplies":
@@ -290,7 +290,7 @@ export function ProductDetail({
               <Truck size={16} />
               Delivery by <b>2–4 days</b>
             </div>
-            <div className="text-sm font-medium">{stockText}</div>
+            <div className="text-sm font-medium text-red-600">{stockText}</div>
 
             {/* QTY */}
             <div className="flex items-center gap-3">

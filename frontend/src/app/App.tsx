@@ -457,6 +457,8 @@ export default function App() {
     setIsWishlistOpen(false);
 
     setToast({ message: "Logged out successfully", type: "success" });
+
+    window.location.reload();
   };
 
   // CART
