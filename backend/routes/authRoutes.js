@@ -6,6 +6,7 @@ const router = express.Router();
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 router.post("/login", login);
 router.post("/signup", signup);
@@ -66,11 +67,11 @@ router.post("/forgot-password", async (req, res) => {
 
     user.resetToken = resetToken;
 
-    user.resetTokenExpiry = Date.now() + 1000 * 60 * 15;
+    user.resetTokenExpiry = new Date(Date.now() + 1000 * 60 * 15);
 
     await user.save();
 
-    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
     console.log("RESET TOKEN:", resetToken);
 
@@ -111,11 +112,14 @@ router.post("/reset-password/:token", async (req, res) => {
   try {
     const { password } = req.body;
 
-    console.log("TOKEN RECEIVED:", req.params.token);
+    console.log({
+      receivedToken: req.params.token,
+      currentTime: new Date(),
+    });
 
     const user = await User.findOne({
       resetToken: req.params.token,
-      resetTokenExpiry: { $gt: Date.now() },
+      resetTokenExpiry: { $gt: new Date() },
     });
 
     if (!user) {

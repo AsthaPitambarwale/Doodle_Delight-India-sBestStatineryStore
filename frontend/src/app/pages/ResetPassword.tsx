@@ -34,6 +34,7 @@ export default function ResetPassword() {
         body: JSON.stringify({ password }),
       });
 
+      console.log(token);
       const data = await res.json();
 
       if (data.success) {
