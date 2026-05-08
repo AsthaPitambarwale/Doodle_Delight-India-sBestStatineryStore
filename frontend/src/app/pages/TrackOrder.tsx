@@ -55,22 +55,34 @@ export function TrackOrder({ orderId: initialOrderId }: { orderId?: string }) {
     setLoading(false);
   };
 
-  // ✅ FIXED LOGIC
-  const steps = ["placed", "paid", "shipped", "delivered"];
-
-  const getStepIndex = (status: string) => {
-    switch (status) {
-      case "placed":
-        return 0; // COD
-      case "paid":
-        return 1; // Online paid
-      case "shipped":
-        return 2;
-      case "delivered":
-        return 3;
-      default:
-        return 0;
+  // Dynamic Steps
+  const getSteps = (status: string) => {
+    // Cancel flow
+    if (status === "cancelled") {
+      return ["placed", "cancelled"];
     }
+
+    // Refund flow
+    if (["refund_requested", "refunded"].includes(status)) {
+      return [
+        "placed",
+        "paid",
+        "shipped",
+        "delivered",
+        "refund_requested",
+        "refunded",
+      ];
+    }
+
+    // Normal flow
+    return ["placed", "paid", "shipped", "delivered"];
+  };
+
+  // Current Active Step
+  const getStepIndex = (status: string) => {
+    const steps = getSteps(status);
+
+    return steps.indexOf(status);
   };
 
   return (
@@ -106,25 +118,49 @@ export function TrackOrder({ orderId: initialOrderId }: { orderId?: string }) {
             <h2 className="text-xl font-bold mb-6">Order Status</h2>
 
             {/* ✅ STEPPER */}
+            {/* ✅ DYNAMIC ORDER STEPPER */}
             {(() => {
+              const steps = getSteps(order.status);
               const currentStep = getStepIndex(order.status);
 
               return (
-                <div className="flex justify-between mb-10">
+                <div className="flex justify-between mb-10 gap-2 overflow-x-auto">
                   {steps.map((step, i) => {
                     const active = i <= currentStep;
 
+                    // ✅ Dynamic colors
+                    const getStepColor = () => {
+                      if (!active) return "bg-gray-300";
+
+                      if (step === "cancelled") {
+                        return "bg-red-500";
+                      }
+
+                      if (step === "refund_requested") {
+                        return "bg-yellow-500";
+                      }
+
+                      if (step === "refunded") {
+                        return "bg-blue-500";
+                      }
+
+                      return "bg-green-500";
+                    };
+
                     return (
-                      <div key={step} className="text-center flex-1">
+                      <div
+                        key={step}
+                        className="text-center flex-1 min-w-[90px]"
+                      >
                         <div
-                          className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center text-white ${
-                            active ? "bg-green-500" : "bg-gray-300"
-                          }`}
+                          className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center text-white font-bold ${getStepColor()}`}
                         >
                           {i + 1}
                         </div>
 
-                        <p className="text-sm mt-2 capitalize">{step}</p>
+                        <p className="text-sm mt-2 capitalize font-medium">
+                          {step.replace("_", " ")}
+                        </p>
                       </div>
                     );
                   })}

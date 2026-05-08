@@ -1,4 +1,12 @@
-import {Truck, Package, CheckCircle, RefreshCcw } from "lucide-react";
+import {
+  Truck,
+  Package,
+  CheckCircle,
+  RefreshCcw,
+  XCircle,
+  RotateCcw,
+  BadgeCheck,
+} from "lucide-react";
 
 export default function OrderDetailsModal({
   order,
@@ -7,76 +15,170 @@ export default function OrderDetailsModal({
 }: any) {
   if (!order) return null;
 
-  const steps = ["placed", "packed", "shipped", "delivered"];
+  // Dynamic Steps
+  const getSteps = (status: string) => {
+    if (status === "cancelled") {
+      return ["placed", "cancelled"];
+    }
+
+    if (["refund_requested", "refunded"].includes(status)) {
+      return [
+        "placed",
+        "paid",
+        "shipped",
+        "delivered",
+        "refund_requested",
+        "refunded",
+      ];
+    }
+
+    return ["placed", "paid", "shipped", "delivered"];
+  };
+
+  const steps = getSteps(order.status);
 
   const getStepIndex = (status: string) => {
-    switch (status) {
-      case "placed":
-        return 0;
-      case "paid":
-        return 0;
-      case "packed":
-        return 1;
-      case "shipped":
-        return 2;
-      case "delivered":
-        return 3;
-      default:
-        return 0;
-    }
+    return steps.indexOf(status);
   };
 
   const currentStep = getStepIndex(order.status);
 
+  const getStepIcon = (step: string) => {
+    switch (step) {
+      case "placed":
+      case "paid":
+        return <Package size={18} />;
+
+      case "shipped":
+        return <Truck size={18} />;
+
+      case "delivered":
+        return <CheckCircle size={18} />;
+
+      case "cancelled":
+        return <XCircle size={18} />;
+
+      case "refund_requested":
+        return <RotateCcw size={18} />;
+
+      case "refunded":
+        return <BadgeCheck size={18} />;
+
+      default:
+        return <Package size={18} />;
+    }
+  };
+
+  const getStepColor = (step: string, active: boolean) => {
+    if (!active) {
+      return "bg-gray-200 text-gray-400";
+    }
+
+    if (step === "cancelled") {
+      return "bg-red-500 text-white";
+    }
+
+    if (["refund_requested", "refunded"].includes(step)) {
+      return "bg-yellow-500 text-white";
+    }
+
+    return "bg-green-500 text-white";
+  };
+
+  // Line Colors
+  const getLineColor = (step: string, active: boolean) => {
+    if (!active) {
+      return "bg-gray-200";
+    }
+
+    if (step === "cancelled") {
+      return "bg-red-500";
+    }
+
+    if (["refund_requested", "refunded"].includes(step)) {
+      return "bg-yellow-500";
+    }
+
+    return "bg-green-500";
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto">
         
         {/* HEADER */}
         <div className="flex justify-between items-center p-5 border-b">
           <div>
             <h2 className="font-bold text-xl">Order #{order._id}</h2>
+
             <p className="text-sm text-gray-500">
               {new Date(order.createdAt).toLocaleString()}
             </p>
           </div>
+
+          {/* STATUS BADGE */}
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-bold
+              ${
+                order.status === "cancelled"
+                  ? "bg-red-100 text-red-700"
+                  : order.status === "refund_requested"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : order.status === "refunded"
+                      ? "bg-green-100 text-green-700"
+                      : order.status === "delivered"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-blue-100 text-blue-700"
+              }
+            `}
+          >
+            {order.status.replace("_", " ")}
+          </span>
         </div>
 
         {/* TRACKING TIMELINE */}
         <div className="p-5">
-          <h3 className="font-semibold mb-4">Tracking</h3>
+          <h3 className="font-semibold mb-6">Tracking</h3>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start gap-2 overflow-x-auto pb-2">
             {steps.map((step, index) => {
               const isActive = index <= currentStep;
 
               return (
-                <div key={step} className="flex-1 text-center relative">
-                  <div
-                    className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center 
-                    ${isActive ? "bg-green-500 text-white" : "bg-gray-200"}`}
-                  >
-                    {index === 0 && <Package size={18} />}
-                    {index === 1 && <Package size={18} />}
-                    {index === 2 && <Truck size={18} />}
-                    {index === 3 && <CheckCircle size={18} />}
-                  </div>
-
-                  <p
-                    className={`text-xs mt-2 capitalize ${
-                      isActive ? "text-green-600 font-semibold" : "text-gray-400"
-                    }`}
-                  >
-                    {step}
-                  </p>
-
-                  {/* Line */}
+                <div
+                  key={step}
+                  className="flex-1 text-center relative min-w-[90px]"
+                >
+                  {/* LINE */}
                   {index < steps.length - 1 && (
                     <div
-                      className={`absolute top-5 left-1/2 w-full h-1 
-                      ${index < currentStep ? "bg-green-500" : "bg-gray-200"}`}
+                      className={`absolute top-5 left-1/2 w-full h-1 z-0
+                        ${getLineColor(step, index < currentStep)}
+                      `}
                     />
                   )}
+
+                  {/* ICON */}
+                  <div
+                    className={`relative z-10 w-10 h-10 mx-auto rounded-full flex items-center justify-center
+                      ${getStepColor(step, isActive)}
+                    `}
+                  >
+                    {getStepIcon(step)}
+                  </div>
+
+                  {/* LABEL */}
+                  <p
+                    className={`text-xs mt-2 capitalize font-medium
+                      ${
+                        isActive
+                          ? "text-gray-800"
+                          : "text-gray-400"
+                      }
+                    `}
+                  >
+                    {step.replace("_", " ")}
+                  </p>
                 </div>
               );
             })}
@@ -100,7 +202,10 @@ export default function OrderDetailsModal({
                 />
 
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{item.name}</p>
+                  <p className="font-semibold text-gray-900">
+                    {item.name}
+                  </p>
+
                   <p className="text-sm text-gray-500">
                     Qty: {item.quantity}
                   </p>

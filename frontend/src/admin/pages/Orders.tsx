@@ -65,6 +65,12 @@ export default function Orders() {
           next: "delivered",
           color: "bg-green-600",
         };
+      case "refund_requested":
+        return {
+          label: "Approve Refund",
+          next: "refunded",
+          color: "bg-yellow-600",
+        };
       case "delivered":
         if (isCOD && !order.paymentReceived) {
           return {
@@ -142,7 +148,9 @@ export default function Orders() {
           ))}
         </select>
 
-        <label htmlFor="" className="p-2">Start Date : </label>
+        <label htmlFor="" className="p-2">
+          Start Date :{" "}
+        </label>
         <input
           type="date"
           className="border p-2 rounded-lg w-full md:w-auto"
@@ -150,7 +158,9 @@ export default function Orders() {
           onChange={(e) => setStartDate(e.target.value)}
         />
 
-        <label htmlFor="" className="p-2">End Date : </label>
+        <label htmlFor="" className="p-2">
+          End Date :{" "}
+        </label>
         <input
           type="date"
           className="border p-2 rounded-lg w-full md:w-auto"
