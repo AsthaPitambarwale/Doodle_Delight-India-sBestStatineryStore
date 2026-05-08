@@ -31,6 +31,8 @@ interface MyAccountProps {
   onPreviewInvoice: (id: string) => void;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 export function MyAccount({
   isOpen,
   onClose,
@@ -73,42 +75,51 @@ export function MyAccount({
 
   const handleCancelOrder = async (id: string) => {
     try {
-      const res = await fetch(`/api/orders/cancel/${id}`, {
+      const res = await fetch(`${BASE_URL}/orders/cancel/${id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await res.json();
 
-      if (data.success) {
-        showToast("Order cancelled", "success");
-        onRefreshOrders();
-      } else {
-        showToast("Cancel failed", "error");
+      if (!res.ok) {
+        throw new Error(data.message || "Cancel failed");
       }
-    } catch (err) {
+
+      showToast(data.message || "Order cancelled", "success");
+
+      onRefreshOrders();
+    } catch (err: any) {
       console.error(err);
-      showToast("Server error", "error");
+
+      showToast(err.message || "Server error", "error");
     }
   };
 
   const handleReturnOrder = async (id: string) => {
     try {
-      const res = await fetch(`/api/orders/return/${id}`, {
+      const res = await fetch(`${BASE_URL}/orders/return/${id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await res.json();
 
-      if (data.success) {
-        showToast("Refund request submitted", "success");
-
-        onRefreshOrders();
-      } else {
-        showToast("Return failed", "error");
+      if (!res.ok) {
+        throw new Error(data.message || "Return failed");
       }
-    } catch (err) {
+
+      showToast(data.message || "Refund request submitted", "success");
+
+      onRefreshOrders();
+    } catch (err: any) {
       console.error(err);
-      showToast("Server error", "error");
+
+      showToast(err.message || "Server error", "error");
     }
   };
 
@@ -165,50 +176,55 @@ flex flex-col overflow-hidden"
             <div className="flex gap-2 px-3 md:px-4 py-2 bg-gray-50 border-b border-gray-200 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "overview"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "overview"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 <User className="w-4 h-4" />
                 Overview
               </button>
               <button
                 onClick={() => setActiveTab("orders")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "orders"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "orders"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 <Package className="w-4 h-4" />
                 Orders ({orders?.length || 0})
               </button>
               <button
                 onClick={() => setActiveTab("addresses")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "addresses"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "addresses"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 <MapPin className="w-4 h-4" />
                 Addresses
               </button>
               <button
                 onClick={() => setActiveTab("wishlist")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "wishlist"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "wishlist"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 <Heart className="w-4 h-4" />
                 Wishlist ({wishlistItems.length})
               </button>
               <button
                 onClick={() => setActiveTab("settings")}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${activeTab === "settings"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "settings"
                     ? "bg-orange-500 text-white shadow-md"
                     : "text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 <Settings className="w-4 h-4" />
                 Settings
@@ -393,22 +409,23 @@ flex flex-col overflow-hidden"
                                   <p className="text-sm text-gray-600">
                                     {order.createdAt
                                       ? new Date(
-                                        order.createdAt,
-                                      ).toLocaleDateString()
+                                          order.createdAt,
+                                        ).toLocaleDateString()
                                       : "N/A"}
                                   </p>
                                 </div>
 
                                 <span
                                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap
-    ${order.status === "cancelled"
-                                      ? "bg-red-100 text-red-700"
-                                      : order.status === "refund_requested"
-                                        ? "bg-yellow-100 text-yellow-700"
-                                        : order.status === "delivered"
-                                          ? "bg-green-100 text-green-700"
-                                          : "bg-blue-100 text-blue-700"
-                                    }
+    ${
+      order.status === "cancelled"
+        ? "bg-red-100 text-red-700"
+        : order.status === "refund_requested"
+          ? "bg-yellow-100 text-yellow-700"
+          : order.status === "delivered"
+            ? "bg-green-100 text-green-700"
+            : "bg-blue-100 text-blue-700"
+    }
   `}
                                 >
                                   {order.status === "refund_requested"
@@ -460,7 +477,7 @@ flex flex-col overflow-hidden"
                                 )}
 
                               {/* RETURN */}
-                              {["paid", "delivered"].includes(order.status) && (
+                              {order.status === "delivered" && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -725,10 +742,11 @@ flex flex-col overflow-hidden"
         <div className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] md:w-auto">
           <div
             className={`px-6 py-3 rounded-xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top
-      ${toast.type === "success"
-                ? "bg-green-50 text-green-700 border-green-200"
-                : "bg-red-50 text-red-700 border-red-200"
-              }`}
+      ${
+        toast.type === "success"
+          ? "bg-green-50 text-green-700 border-green-200"
+          : "bg-red-50 text-red-700 border-red-200"
+      }`}
           >
             <span className="font-semibold">{toast.message}</span>
           </div>

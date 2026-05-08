@@ -76,22 +76,36 @@ router.put("/cancel/:orderId", async (req, res) => {
     const order = await Order.findById(req.params.orderId);
 
     if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
 
-    if (order.status === "delivered") {
-      return res.json({
+    // Cannot cancel delivered/cancelled/refunded
+    if (["delivered", "cancelled", "refunded"].includes(order.status)) {
+      return res.status(400).json({
         success: false,
-        message: "Delivered orders cannot be cancelled",
+        message: `Order cannot be cancelled when status is ${order.status}`,
       });
     }
 
     order.status = "cancelled";
+
     await order.save();
 
-    res.json({ success: true });
+    return res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+      order,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Cancel Order Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 });
 
@@ -101,22 +115,36 @@ router.put("/return/:orderId", async (req, res) => {
     const order = await Order.findById(req.params.orderId);
 
     if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
 
-    if (!["paid", "delivered"].includes(order.status)) {
-      return res.json({
+    // Only delivered orders should be returnable
+    if (order.status !== "delivered") {
+      return res.status(400).json({
         success: false,
-        message: "Only paid or delivered orders are allowed",
+        message: "Only delivered orders can be returned",
       });
     }
 
     order.status = "refund_requested";
+
     await order.save();
 
-    res.json({ success: true });
+    return res.status(200).json({
+      success: true,
+      message: "Return request submitted",
+      order,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Return Order Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 });
 

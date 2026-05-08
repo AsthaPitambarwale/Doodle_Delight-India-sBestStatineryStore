@@ -8,10 +8,10 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 > (Add your links here after deployment)
 
-* Frontend: [https://doodle-delight-india-s-best-statine.vercel.app](https://doodle-delight-india-s-best-statine.vercel.app)
-* Backend: [https://doodle-delight-india-sbeststatinerystore.onrender.com](https://doodle-delight-india-sbeststatinerystore.onrender.com)
-* Admin Panel: /admin route
-{For admin login details - contact me on asthapitambarwale@gmail.com}
+- Frontend: [https://doodle-delight-india-s-best-statine.vercel.app](https://doodle-delight-india-s-best-statine.vercel.app)
+- Backend: [https://doodle-delight-india-sbeststatinerystore.onrender.com](https://doodle-delight-india-sbeststatinerystore.onrender.com)
+- Admin Panel: /admin route
+  {For admin login details - contact me on asthapitambarwale@gmail.com}
 
 ---
 
@@ -21,49 +21,48 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ### 🛒 Advanced Cart System
 
-* Add / remove items
-* Increment / decrement quantity
-* Persistent cart across devices
-* Guest cart → merge after login
-* MongoDB synced cart
-* Real-time cart updates
+- Add / remove items
+- Increment / decrement quantity
+- Persistent cart across devices
+- Guest cart → merge after login
+- MongoDB synced cart
+- Real-time cart updates
 
 ---
 
 ### ❤️ Wishlist System
 
-* Add / remove items
-* Prevent duplicate entries
-* Move item from wishlist → cart
-* Persistent wishlist sync across devices
+- Add / remove items
+- Prevent duplicate entries
+- Move item from wishlist → cart
+- Persistent wishlist sync across devices
 
 ---
 
 ### 📦 Product System
 
-* Product variants (size, color, pack type)
-* Image gallery per product
-* Stock tracking system
-* Low stock alerts
-* Out-of-stock blocking
+- Product variants (size, color, pack type)
+- Image gallery per product
+- Stock tracking system
+- Low stock alerts
+- Out-of-stock blocking
 
 ---
 
 ### 🔎 Search & Filtering
 
-* Search by product name & category
-* Advanced filters:
+- Search by product name & category
+- Advanced filters:
+  - Price range
+  - Brand
+  - Rating
+  - Availability
 
-  * Price range
-  * Brand
-  * Rating
-  * Availability
-* Sorting:
-
-  * Price: Low → High
-  * Price: High → Low
-  * Newest first
-  * Popularity
+- Sorting:
+  - Price: Low → High
+  - Price: High → Low
+  - Newest first
+  - Popularity
 
 ---
 
@@ -71,30 +70,30 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ### 🔐 Authentication System
 
-* JWT authentication
-* Role-based access (Admin / User)
-* Login / Signup system
-* Google OAuth (optional extension)
-* Password reset (email-based)
+- JWT authentication
+- Role-based access (Admin / User)
+- Login / Signup system
+- Google OAuth (optional extension)
+- Password reset (email-based)
 
 ---
 
 ### 👤 User Profile System
 
-* Edit profile
-* Multiple shipping addresses
-* Order history tracking
-* Saved wishlist preferences
+- Edit profile
+- Multiple shipping addresses
+- Order history tracking
+- Saved wishlist preferences
 
 ---
 
 ### 📱 UI/UX Improvements
 
-* Mobile-first responsive design
-* Loading skeletons
-* Toast notifications
-* Smooth cart animations
-* Fast navigation
+- Mobile-first responsive design
+- Loading skeletons
+- Toast notifications
+- Smooth cart animations
+- Fast navigation
 
 ---
 
@@ -102,30 +101,34 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ### 💰 Payments
 
-* Razorpay / Stripe integration
-* Cash on Delivery (COD)
-* Payment status tracking:
-
-  * Pending
-  * Paid
-  * Failed
+- Razorpay / Stripe integration
+- Cash on Delivery (COD)
+- Payment status tracking:
+  - Pending
+  - Paid
+  - Failed
 
 ---
 
 ### 📦 Orders
 
-* Order lifecycle:
+- Order lifecycle:
+  - Placed
+  - Paid
+  - Shipped
+  - Delivered
+  - Cancelled
+  - Refunded
 
-  * Placed
-  * Paid
-  * Shipped
-  * Delivered
-  * Cancelled
-  * Refunded
-* Order history page
-* Order tracking system
-* Cancel / return / refund support
-* Invoice generation (PDF download)
+- Order history page
+- Order tracking system
+- Cancel / return / refund support
+- Invoice generation (PDF download)
+
+- Notifications system
+  - Email
+  - order confirmation
+  - In-app notifications
 
 ---
 
@@ -133,37 +136,37 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ### 📦 Product Management
 
-* Add / edit / delete products
-* Bulk upload (CSV/Excel support)
-* Category management
-* Inventory control
+- Add / edit / delete products
+- Bulk upload (CSV/Excel support)
+- Category management
+- Inventory control
 
 ---
 
 ### 📦 Order Management
 
-* View all orders
-* Update order status
-* Filter by status & date
-* Order analytics
+- View all orders
+- Update order status
+- Filter by status & date
+- Order analytics
 
 ---
 
 ### 👥 User Management
 
-* View all users
-* Search / filter / sort users
-* Block / unblock users
+- View all users
+- Search / filter / sort users
+- Block / unblock users
 
 ---
 
 ### 📊 Dashboard Analytics
 
-* Daily / weekly revenue charts
-* Recent orders overview
-* Top customers
-* Low stock alerts
-* Sales performance insights
+- Daily / weekly revenue charts
+- Recent orders overview
+- Top customers
+- Low stock alerts
+- Sales performance insights
 
 ---
 
@@ -171,28 +174,28 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ## Frontend
 
-* React.js (Vite)
-* TypeScript
-* Tailwind CSS
-* React Router DOM
-* Context API / State management
-* Firebase (Goodle Authentication Login)
-* NodeMailer Crypto(password reset)
+- React.js (Vite)
+- TypeScript
+- Tailwind CSS
+- React Router DOM
+- Context API / State management
+- Firebase (Goodle Authentication Login)
+- NodeMailer Crypto(password reset)
 
 ## Backend
 
-* Node.js
-* Express.js
-* MongoDB + Mongoose
-* JWT Authentication
-* REST APIs
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT Authentication
+- REST APIs
 
 ## Integrations
 
-* Razorpay / Stripe
-* Cloudinary (images)
-* Nodemailer (emails)
-* PDF Invoice generation
+- Razorpay / Stripe
+- Cloudinary (images)
+- Nodemailer (emails)
+- PDF Invoice generation
 
 ---
 
@@ -242,8 +245,7 @@ FRONTEND_URL=http://localhost:5173  //for localhost
 FRONTEND_URL=http://you-vercel.com  //after deploy your frontend link
 ```
 
-Add cors in server.js your frontend link.
----
+## Add cors in server.js your frontend link.
 
 # 🚀 How to run on localhost
 
@@ -271,34 +273,34 @@ node server.js
 
 # ⚡ API Features
 
-* Auth APIs (login/signup/logout)
-* Product APIs (CRUD + filters)
-* Cart APIs (sync + persistent)
-* Wishlist APIs
-* Order APIs
-* Admin APIs
+- Auth APIs (login/signup/logout)
+- Product APIs (CRUD + filters)
+- Cart APIs (sync + persistent)
+- Wishlist APIs
+- Order APIs
+- Admin APIs
 
 ---
 
 # 📦 Key Highlights
 
-* 🔥 Fully dynamic e-commerce system
-* 🔐 Secure authentication (JWT)
-* 🛒 Advanced cart + wishlist logic
-* 💳 Payment gateway ready
-* 📊 Admin analytics dashboard
-* 📱 Mobile-first UI
-* ⚡ Fast & scalable architecture
+- 🔥 Fully dynamic e-commerce system
+- 🔐 Secure authentication (JWT)
+- 🛒 Advanced cart + wishlist logic
+- 💳 Payment gateway ready
+- 📊 Admin analytics dashboard
+- 📱 Mobile-first UI
+- ⚡ Fast & scalable architecture
 
 ---
 
 # 🧠 Future Improvements
 
-* AI product recommendations
-* Chat support system
-* PWA support (installable app)
-* Multi-vendor marketplace
-* Inventory automation system
+- AI product recommendations
+- Chat support system
+- PWA support (installable app)
+- Multi-vendor marketplace
+- Inventory automation system
 
 ---
 
@@ -306,8 +308,8 @@ node server.js
 
 **Your Name**
 
-* GitHub: [https://github.com/AsthaPitambarwale](https://github.com/AsthaPitambarwale)
-* LinkedIn: [https://linkedin.com/in/astha-pitambarwale-a32028316](https://linkedin.com/in/astha-pitambarwale-a32028316)
+- GitHub: [https://github.com/AsthaPitambarwale](https://github.com/AsthaPitambarwale)
+- LinkedIn: [https://linkedin.com/in/astha-pitambarwale-a32028316](https://linkedin.com/in/astha-pitambarwale-a32028316)
 
 ---
 
