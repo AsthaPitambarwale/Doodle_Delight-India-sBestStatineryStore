@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
+  },
   name: String,
   description: String,
   category: String,
@@ -12,8 +16,8 @@ const productSchema = new mongoose.Schema({
       minQty: Number,
       price: Number,
     },
-  ], 
-  
+  ],
+
   images: [String],
 
   stock: Number,

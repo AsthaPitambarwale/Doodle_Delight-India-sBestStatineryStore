@@ -256,15 +256,16 @@ export function ShoppingCart({
                                     {sortedTiers.map(
                                       (tier: any, idx: number) => {
                                         const active =
+                                          userType === "wholesale" &&
                                           activeTier?.minQty === tier.minQty;
 
                                         const savings =
                                           originalPrice > tier.price
                                             ? Math.round(
-                                                ((originalPrice - tier.price) /
-                                                  originalPrice) *
-                                                  100,
-                                              )
+                                              ((originalPrice - tier.price) /
+                                                originalPrice) *
+                                              100,
+                                            )
                                             : 0;
 
                                         return (
@@ -273,11 +274,10 @@ export function ShoppingCart({
                                             className={`
                 relative overflow-hidden rounded-2xl border px-3 py-2 min-w-[90px]
                 transition-all duration-300
-                ${
-                  active
-                    ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-500 shadow-lg scale-105"
-                    : "bg-gray-50 border-gray-200 text-gray-700"
-                }
+                ${active
+                                                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-500 shadow-lg scale-105"
+                                                : "bg-gray-50 border-gray-200 text-gray-700"
+                                              }
               `}
                                           >
                                             {active && (
@@ -296,11 +296,10 @@ export function ShoppingCart({
 
                                             {savings > 0 && (
                                               <div
-                                                className={`text-[10px] font-semibold ${
-                                                  active
+                                                className={`text-[10px] font-semibold ${active
                                                     ? "text-green-100"
                                                     : "text-green-600"
-                                                }`}
+                                                  }`}
                                               >
                                                 Save {savings}%
                                               </div>
@@ -524,10 +523,9 @@ export function ShoppingCart({
             className={`
               px-6 py-4 rounded-2xl shadow-2xl border
               flex items-center gap-3 animate-in fade-in slide-in-from-top
-              ${
-                toast.type === "success"
-                  ? "bg-green-50 text-green-700 border-green-200"
-                  : "bg-red-50 text-red-700 border-red-200"
+              ${toast.type === "success"
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-red-50 text-red-700 border-red-200"
               }
             `}
           >

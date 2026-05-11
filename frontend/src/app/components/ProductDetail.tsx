@@ -17,7 +17,25 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-type Product = any;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
+type Product = {
+  _id?: string;
+  id?: string;
+  name?: string;
+  price?: number;
+  wholesalePrice?: number;
+  stock?: number;
+  brand?: string;
+  images?: string[];
+  image?: string;
+  category?: string;
+
+  description?: string;
+  desc?: string;
+  tierPricing?: { minQty: number; price: number }[];
+  sustainabilityScore?: number;
+};
 
 interface Props {
   product: Product | null;
@@ -44,6 +62,8 @@ export function ProductDetail({
   const [variant, setVariant] = useState<any>(null);
   const [showAddedToast, setShowAddedToast] = useState(false);
   const sustainabilityScore = product?.sustainabilityScore || 0;
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [fbtProducts, setFbtProducts] = useState<Product[]>([]);
 
   const getVariants = (product: any) => {
     if (!product) return [];
@@ -104,10 +124,41 @@ export function ProductDetail({
     }
   };
 
-  const variants = useMemo(() => getVariants(product), [product]);
+  const variants = useMemo(() => getVariants(product), [
+    product?.category,
+    product?.price,
+  ]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    if (!product?._id) return;
+
+    const fetchData = async () => {
+      try {
+        const [relatedRes, fbtRes] = await Promise.all([
+          fetch(`${BASE_URL}/products/${product._id}/related`),
+          fetch(`${BASE_URL}/products/${product._id}/frequently-bought`),
+        ]);
+
+        const relatedData = await relatedRes.json();
+        const fbtData = await fbtRes.json();
+
+        setRelatedProducts(relatedData || []);
+        setFbtProducts(fbtData || []);
+      } catch (err) {
+        console.error("Recommendation API error:", err);
+        setRelatedProducts([]);
+        setFbtProducts([]);
+      }
+    };
+
+    fetchData();
+  }, [product]);
+
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -176,7 +227,6 @@ export function ProductDetail({
   const buyNow = () => {
     onAddToCart({
       ...product,
-      selectedVariant: variant,
       quantity: qty,
     });
     onClose();
@@ -209,7 +259,7 @@ export function ProductDetail({
 
   const dynamicPrice = getDynamicPrice();
 
-  if (!isOpen || !product?._id) return null;
+  if (!isOpen || (!product?._id && !product?.id)) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex justify-center items-end md:items-center">
@@ -413,6 +463,24 @@ export function ProductDetail({
               </div>
             )}
 
+            {/* STOCK */}
+            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-4">
+              <div>
+                <p className="text-sm text-gray-500">Availability</p>
+
+                <p
+                  className={`font-bold text-lg ${safeProduct.stock > 0 ? "text-green-600" : "text-red-500"
+                    }`}
+                >
+                  {stockText}
+                </p>
+              </div>
+
+              <div className="bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
+                {safeProduct.stock} Units Left
+              </div>
+            </div>
+
             {/* CTA */}
             <div className="hidden md:grid md:grid-cols-2 gap-4">
               <button
@@ -441,7 +509,6 @@ export function ProductDetail({
 
                   onAddToCart({
                     ...product,
-                    selectedVariant: variant,
                     quantity: qty,
                     sustainabilityScore: product?.sustainabilityScore,
                   });
@@ -468,6 +535,27 @@ export function ProductDetail({
                 <ShoppingCart size={20} />
                 {safeProduct.stock <= 0 ? "Out of Stock" : "Add to Cart"}
               </button>
+            </div>
+
+            {/* DELIVERY */}
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <Truck className="text-orange-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Fast Delivery</p>
+                <p className="text-sm text-gray-500">2–4 business days</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <Shield className="text-green-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Secure Payment</p>
+                <p className="text-sm text-gray-500">100% protected</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <RotateCcw className="text-blue-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Easy Returns</p>
+                <p className="text-sm text-gray-500">7 day return policy</p>
+              </div>
             </div>
           </div>
 
@@ -529,27 +617,6 @@ export function ProductDetail({
               </div>
             </div>
 
-            {/* DELIVERY */}
-            <div className="grid md:grid-cols-3 gap-3">
-              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-                <Truck className="text-orange-500 mb-2" size={22} />
-                <p className="font-semibold text-gray-900">Fast Delivery</p>
-                <p className="text-sm text-gray-500">2–4 business days</p>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-                <Shield className="text-green-500 mb-2" size={22} />
-                <p className="font-semibold text-gray-900">Secure Payment</p>
-                <p className="text-sm text-gray-500">100% protected</p>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-                <RotateCcw className="text-blue-500 mb-2" size={22} />
-                <p className="font-semibold text-gray-900">Easy Returns</p>
-                <p className="text-sm text-gray-500">7 day return policy</p>
-              </div>
-            </div>
-
             <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <p className="font-bold text-gray-900">Sustainability Score</p>
@@ -570,48 +637,116 @@ export function ProductDetail({
               </p>
             </div>
 
-            {/* STOCK */}
-            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-4">
-              <div>
-                <p className="text-sm text-gray-500">Availability</p>
-
-                <p
-                  className={`font-bold text-lg ${safeProduct.stock > 0 ? "text-green-600" : "text-red-500"
-                    }`}
-                >
-                  {stockText}
-                </p>
-              </div>
-
-              <div className="bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
-                {safeProduct.stock} Units Left
-              </div>
-            </div>
-
-            {/* VARIANTS */}
-            {variants.length > 0 && (
-              <div className="bg-white border border-gray-200 rounded-2xl p-5">
-                <h3 className="font-bold text-gray-900 mb-4 text-lg">
-                  Choose Option
+            {fbtProducts?.length > 0 && (
+              <div className="md:col-span-12 mt-6 bg-white border border-gray-200 rounded-3xl p-5 shadow-sm">
+                <h3 className="text-lg font-black mb-4">
+                  Frequently Bought Together
                 </h3>
 
-                <div className="flex flex-wrap gap-3">
-                  {variants.map((v: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => setVariant(v)}
-                      className={`
-                        px-4 py-3 rounded-2xl border font-semibold transition-all
-                        ${variant?.label === v.label
-                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-500 shadow-lg scale-105"
-                          : "bg-gray-50 hover:bg-orange-50 border-gray-200"
-                        }
-                      `}
-                    >
-                      <div>{v.label}</div>
-                      <div className="text-xs opacity-80">₹{v.price}</div>
-                    </button>
-                  ))}
+                <div className="grid md:grid-cols-3 gap-4">
+                  {fbtProducts.map((p: Product) => {
+                    const img =
+                      p?.images?.[0] ||
+                      p?.image ||
+                      "https://via.placeholder.com/100";
+
+                    return (
+                      <div
+                        key={p._id || p.id}
+                        className="border rounded-2xl p-3 flex gap-3 items-center hover:shadow-md transition"
+                      >
+                        <img
+                          src={img}
+                          alt={p?.name || "product"}
+                          className="w-16 h-16 object-cover rounded-xl bg-gray-100"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm line-clamp-1">
+                            {p?.name || "Unnamed Product"}
+                          </p>
+
+                          <p className="text-orange-600 font-bold text-sm">
+                            ₹{p?.price ?? 0}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            onAddToCart({ ...p, quantity: 1 });
+                            setShowAddedToast(false);
+                            setTimeout(() => setShowAddedToast(true), 10);
+
+                            setTimeout(() => {
+                              setShowAddedToast(false);
+                            }, 2500);
+                          }}
+                          className="px-3 py-2 text-xs bg-black text-white rounded-xl hover:opacity-90"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => {
+                    fbtProducts.forEach((p) =>
+                      onAddToCart({ ...p, quantity: 1 })
+                    );
+                    setShowAddedToast(true);
+
+                    setTimeout(() => {
+                      setShowAddedToast(false);
+                    }, 2500);
+                  }}
+                  className="mt-4 w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-2xl font-bold"
+                >
+                  Add All to Cart
+                </button>
+              </div>
+            )}
+
+            {relatedProducts?.length > 0 && (
+              <div className="md:col-span-12 mt-6">
+                <h3 className="text-lg font-black mb-4">
+                  Related Products
+                </h3>
+
+                <div className="grid md:grid-cols-4 gap-4">
+                  {relatedProducts.map((p) => {
+                    const img =
+                      p?.images?.[0] ||
+                      p?.image ||
+                      "https://via.placeholder.com/300";
+
+                    return (
+                      <div
+                        key={p._id}
+                        className="bg-white border rounded-2xl p-3 hover:shadow-lg transition cursor-pointer"
+                        onClick={() => {
+                          // safer: only close modal
+                          onClose();
+                          // optional: set product in parent if needed
+                        }}
+                      >
+                        <img
+                          src={img}
+                          alt={p?.name || "product"}
+                          className="w-full h-32 object-cover rounded-xl mb-2 bg-gray-100"
+                        />
+
+                        <p className="font-semibold text-sm line-clamp-1">
+                          {p?.name || "Unnamed Product"}
+                        </p>
+
+                        <p className="text-orange-600 font-bold">
+                          ₹{p?.price ?? 0}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -640,7 +775,7 @@ export function ProductDetail({
                 {tab === "Overview" && (
                   <div className="space-y-4">
                     <p className="text-gray-700 leading-relaxed text-base">
-                      {safeProduct.description || product.desc ? (
+                      {safeProduct.description || product?.desc ? (
                         safeProduct.description || product.desc
                       ) : (
                         <span className="text-gray-400 italic">
@@ -809,7 +944,6 @@ export function ProductDetail({
             onClick={() =>
               onAddToCart({
                 ...product,
-                selectedVariant: variant,
                 quantity: qty,
               })
             }

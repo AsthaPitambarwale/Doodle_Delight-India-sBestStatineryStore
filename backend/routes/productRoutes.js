@@ -18,6 +18,63 @@ router.get("/", getProducts);
 router.get("/featured", getFeaturedProducts);
 router.get("/search", searchProducts);
 
+router.get("/:id/related", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).json([]);
+
+    const related = await Product.find({
+      _id: { $ne: product._id },
+      category: product.category,
+    }).limit(8);
+
+    res.json(related);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/:id/frequently-bought", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.json([]);
+
+    const candidates = await Product.find({
+      _id: { $ne: product._id },
+    });
+
+    const scored = candidates.map((p) => {
+      let score = 0;
+
+      // same category = strong signal
+      if (p.category === product.category) score += 5;
+
+      // same brand = medium signal
+      if (p.brand === product.brand) score += 3;
+
+      // similar price range = weak signal
+      const priceDiff = Math.abs(p.price - product.price);
+      if (priceDiff < product.price * 0.3) score += 1;
+
+      // sustainability boost (optional)
+      if (p.sustainabilityScore >= 70) score += 1;
+
+      return { product: p, score };
+    });
+
+    const result = scored
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map((s) => s.product);
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // BULK UPLOAD (CSV)
 
 const upload = multer({ dest: "uploads/" });
