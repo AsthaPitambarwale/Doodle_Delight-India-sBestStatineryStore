@@ -7,6 +7,13 @@ const productSchema = new mongoose.Schema({
   price: Number,
   wholesalePrice: Number,
 
+  tierPricing: [
+    {
+      minQty: Number,
+      price: Number,
+    },
+  ], 
+  
   images: [String],
 
   stock: Number,

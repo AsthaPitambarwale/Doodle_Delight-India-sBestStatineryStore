@@ -487,20 +487,34 @@ export default function App() {
     const normalized = {
       ...product,
       productId: product._id,
+
+      image:
+        product.image ||
+        (Array.isArray(product.images) ? product.images[0] : ""),
+
+      quantity: product.quantity || 1,
     };
 
     setCartItems((prev) => {
-      const exist = prev.find((i) => getId(i) === getId(normalized));
+      const existing = prev.find((item) => getId(item) === getId(normalized));
 
-      const updated = exist
-        ? prev.map((i) =>
-            getId(i) === getId(normalized)
-              ? { ...i, quantity: i.quantity + 1 }
-              : i,
-          )
-        : [...prev, { ...normalized, quantity: 1 }];
+      let updated;
+
+      if (existing) {
+        updated = prev.map((item) =>
+          getId(item) === getId(normalized)
+            ? {
+                ...item,
+                quantity: item.quantity + normalized.quantity,
+              }
+            : item,
+        );
+      } else {
+        updated = [...prev, normalized];
+      }
 
       syncCartToDB(updated);
+
       return updated;
     });
   };
@@ -821,7 +835,7 @@ export default function App() {
                     onRemoveItem={handleRemoveItem}
                     user={user}
                     onRequireLogin={() => setIsAuthModalOpen(true)}
-                    onClearCart={handleClearCart}
+                    // onClearCart={handleClearCart}
                     onCheckoutNavigate={() => {
                       setIsCartOpen(false);
                       setIsCheckoutOpen(true);

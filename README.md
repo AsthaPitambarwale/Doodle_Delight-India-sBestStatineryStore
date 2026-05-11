@@ -46,6 +46,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 - Stock tracking system
 - Low stock alerts
 - Out-of-stock blocking
+- WholeSale Tiered Pricing for bulk order.
 
 ---
 

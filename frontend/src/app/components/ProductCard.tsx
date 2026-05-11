@@ -10,6 +10,10 @@ interface Product {
   wholesalePrice: number;
   stock: number;
   featured?: boolean;
+  tierPricing?: {
+    minQty: number;
+    price: number;
+  }[];
 }
 
 interface ProductCardProps {

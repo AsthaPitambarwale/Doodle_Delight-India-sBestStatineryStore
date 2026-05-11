@@ -135,8 +135,6 @@ export function ProductDetail({
     return ["https://via.placeholder.com/400"];
   }, [product]);
 
-  if (!isOpen || !product?._id) return null;
-
   const safeProduct = {
     _id: product?._id || "",
     name: product?.name || "Untitled Product",
@@ -182,6 +180,35 @@ export function ProductDetail({
     });
     onClose();
   };
+
+  const sortedTiers = useMemo(() => {
+    return [...(product?.tierPricing || [])].sort(
+      (a, b) => a.minQty - b.minQty,
+    );
+  }, [product?.tierPricing]);
+
+  const activeTier = useMemo(() => {
+    return (
+      [...sortedTiers].reverse().find((tier) => qty >= tier.minQty) || null
+    );
+  }, [sortedTiers, qty]);
+
+  const getDynamicPrice = () => {
+    let base =
+      userType === "wholesale"
+        ? safeProduct.wholesalePrice || safeProduct.price
+        : safeProduct.price;
+
+    if (activeTier) {
+      base = activeTier.price;
+    }
+
+    return base;
+  };
+
+  const dynamicPrice = getDynamicPrice();
+
+  if (!isOpen || !product?._id) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex justify-center items-end md:items-center">
@@ -331,6 +358,63 @@ export function ProductDetail({
               </div>
             </div>
 
+            {userType === "wholesale" && sortedTiers.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-gray-900">Bulk Pricing</h3>
+
+                  <div className="text-sm text-orange-600 font-semibold">
+                    Qty: {qty}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {sortedTiers.map((tier: any, i: number) => {
+                    const active = activeTier?.minQty === tier.minQty;
+
+                    const savings = Math.round(
+                      ((safeProduct.price - tier.price) / safeProduct.price) *
+                        100,
+                    );
+
+                    return (
+                      <div
+                        key={i}
+                        className={`
+              relative rounded-2xl border p-4 transition-all duration-300
+              ${
+                active
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-500 shadow-2xl scale-105"
+                  : "bg-gray-50 border-gray-200"
+              }
+            `}
+                      >
+                        {active && (
+                          <div className="absolute top-2 right-2 text-[10px] bg-white/20 px-2 py-1 rounded-full">
+                            ACTIVE
+                          </div>
+                        )}
+
+                        <p className="text-sm font-bold">Buy {tier.minQty}+</p>
+
+                        <p className="text-2xl font-black mt-1">
+                          ₹{tier.price}
+                        </p>
+
+                        <p
+                          className={`text-xs mt-1 font-semibold ${
+                            active ? "text-green-100" : "text-green-600"
+                          }`}
+                        >
+                          Save {savings}%
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* CTA */}
             <div className="grid md:grid-cols-2 gap-4">
               <button
@@ -430,7 +514,7 @@ export function ProductDetail({
 
                   <div className="flex items-center gap-3">
                     <h2 className="text-4xl md:text-5xl font-black">
-                      ₹{price}
+                      ₹{dynamicPrice}
                     </h2>
 
                     {userType === "wholesale" && (
