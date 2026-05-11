@@ -47,6 +47,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 - Out-of-stock blocking
 - Frequently Bought Together
 - Related Products
+- Sustainablity Score
 - WholeSale Tiered Pricing for bulk order.
 
 ---

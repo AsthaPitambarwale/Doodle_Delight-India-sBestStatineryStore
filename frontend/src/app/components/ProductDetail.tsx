@@ -715,7 +715,7 @@ export function ProductDetail({
                 </h3>
 
                 <div className="grid md:grid-cols-4 gap-4">
-                  {relatedProducts.map((p) => {
+                  {relatedProducts.slice(0, 4).map((p) => {
                     const img =
                       p?.images?.[0] ||
                       p?.image ||

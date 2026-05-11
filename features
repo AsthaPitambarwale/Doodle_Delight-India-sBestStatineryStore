@@ -22,6 +22,10 @@ Low-stock alerts✅
 Out-of-stock blocking✅
 Product images gallery✅
 Add to cart/Buy Now and add to wishlist and view detail page✅
+✅ Frequently Bought Together
+✅ Related Products
+✅ Tiered Pricing
+✅ Sustainability Score
 🔎 Search & filtering (VERY IMPORTANT)
 Search by name + category✅
 Filters:
@@ -55,6 +59,7 @@ Razorpay / Stripe integration✅
 COD option✅
 Payment status tracking✅
 Coupon system ✅
+✅ Eco Packaging Toggle
 📦 Order system
 Order statuses:
 Placed✅
@@ -105,14 +110,8 @@ Admin replies
 
 
 ✅ MY RECOMMENDED IMPLEMENTATION ORDER
-PHASE 1 (Can implement THIS WEEK)
 
-✅ Tiered Pricing
-✅ Sustainability Score
 Mystery Boxes
-✅ Eco Packaging Toggle
-✅ Frequently Bought Together
-✅ Related Products
 Build Your Own Kit
 
 PHASE 2
