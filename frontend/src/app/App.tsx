@@ -151,6 +151,16 @@ export default function App() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      setUser(parsed);
+      setUserType(parsed.userType);
+    }
+  }, []);
+
   // SEARCH + CATEGORY
   useEffect(() => {
     const fetchData = async () => {

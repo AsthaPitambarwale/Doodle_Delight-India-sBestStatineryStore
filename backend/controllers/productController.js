@@ -1,6 +1,6 @@
 const Product = require("../models/Product");
 
-// ✅ Get all products (with optional category filter)
+//Get all products (with optional category filter)
 exports.getProducts = async (req, res) => {
   try {
     const { category } = req.query;
@@ -17,7 +17,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// ✅ Get featured products
+// Get featured products
 exports.getFeaturedProducts = async (req, res) => {
   try {
     const products = await Product.find({ featured: true });
@@ -27,7 +27,7 @@ exports.getFeaturedProducts = async (req, res) => {
   }
 };
 
-// ✅ Get single product (IMPORTANT: string _id)
+// Get single product (IMPORTANT: string _id)
 exports.getProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -37,7 +37,7 @@ exports.getProduct = async (req, res) => {
   }
 };
 
-// ✅ Search products
+// Search products
 exports.searchProducts = async (req, res) => {
   try {
     const { q } = req.query;
