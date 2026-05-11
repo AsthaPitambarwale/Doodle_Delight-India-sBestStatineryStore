@@ -109,6 +109,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
   - Paid
   - Failed
 - Coupon System 
+- Eco Packaging Toggle
 ---
 
 ### 📦 Orders
@@ -141,6 +142,7 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 - Bulk upload (CSV/Excel support)
 - Category management
 - Inventory control
+- Sustainability Score
 
 ---
 

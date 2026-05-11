@@ -19,6 +19,13 @@ const productSchema = new mongoose.Schema({
   stock: Number,
   brand: String,
   featured: Boolean,
+
+  sustainabilityScore: {
+    type: Number,
+    default: 0, // 0 - 100
+    min: 0,
+    max: 100,
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);

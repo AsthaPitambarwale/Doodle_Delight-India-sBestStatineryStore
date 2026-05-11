@@ -58,34 +58,23 @@ export default function CheckoutPage({
 
   const [loading, setLoading] = useState(false);
 
-  // ADDRESS
   const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const [addressLoading, setAddressLoading] = useState(false);
   const addressInitialized = useRef(false);
 
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const [ecoPackaging, setEcoPackaging] = useState(false);
+  const ECO_PACKAGING_FEE = 25;
 
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
+  const [toast, setToast] = useState<any>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
-
-    setTimeout(() => {
-      setToast(null);
-    }, 2500);
+    setTimeout(() => setToast(null), 2500);
   };
 
-  // FETCH SAVED ADDRESSES
   useEffect(() => {
-    if (!user?._id) return;
-
-    // stop refetch glitch
-    if (addressInitialized.current) return;
+    if (!user?._id || addressInitialized.current) return;
 
     const fetchAddresses = async () => {
       try {
@@ -94,18 +83,12 @@ export default function CheckoutPage({
         const res = await fetch(`${BASE_URL}/address/${user._id}`);
         const data = await res.json();
 
-        const safeAddresses = Array.isArray(data) ? data : [];
+        const safe = Array.isArray(data) ? data : [];
 
-        setAddresses(safeAddresses);
-
-        // ONLY FIRST TIME
-        if (safeAddresses.length > 0 && !selectedAddress) {
-          setSelectedAddress(safeAddresses[0]);
-        }
+        setAddresses(safe);
+        if (safe.length > 0) setSelectedAddress(safe[0]);
 
         addressInitialized.current = true;
-      } catch (err) {
-        console.error(err);
       } finally {
         setAddressLoading(false);
       }
@@ -114,91 +97,67 @@ export default function CheckoutPage({
     fetchAddresses();
   }, [user?._id]);
 
-  // PRICE CALCULATIONS
   const subtotal = useMemo(() => {
     return items.reduce((sum: number, item: any) => {
       const price =
-        userType === "wholesale" ? item.wholesalePrice || 0 : item.price || 0;
+        userType === "wholesale"
+          ? item.wholesalePrice || 0
+          : item.price || 0;
 
       return sum + price * item.quantity;
     }, 0);
   }, [items, userType]);
 
   const autoDiscount = subtotal >= 999 ? subtotal * 0.2 : 0;
+  const ecoFee = ecoPackaging ? ECO_PACKAGING_FEE : 0;
 
-  const tax = (subtotal - autoDiscount - couponDiscount) * 0.18;
+  const taxBase = Math.max(subtotal - autoDiscount - couponDiscount, 0);
+  const tax = taxBase * 0.18;
 
-  const delivery = subtotal - autoDiscount - couponDiscount >= 500 ? 0 : 50;
+  const delivery = taxBase >= 500 ? 0 : 50;
 
-  const total = subtotal - autoDiscount - couponDiscount + tax + delivery;
+  const total =
+    taxBase + tax + delivery + ecoFee;
 
-  // APPLY COUPON
   const applyCoupon = () => {
-    const foundCoupon = AVAILABLE_COUPONS.find(
-      (c) => c.code.toLowerCase() === coupon.trim().toLowerCase(),
+    const found = AVAILABLE_COUPONS.find(
+      (c) => c.code.toLowerCase() === coupon.toLowerCase(),
     );
 
-    if (!foundCoupon) {
-      showToast("Invalid coupon code", "error");
-      return;
-    }
+    if (!found) return showToast("Invalid coupon", "error");
 
-    if (subtotal < foundCoupon.minOrder) {
-      showToast(`Minimum order ₹${foundCoupon.minOrder} required`, "error");
-      return;
-    }
+    if (subtotal < found.minOrder)
+      return showToast(`Min ₹${found.minOrder} required`, "error");
 
-    let discountAmount = 0;
+    const discount =
+      found.type === "percentage"
+        ? (subtotal * found.value) / 100
+        : found.value;
 
-    if (foundCoupon.type === "percentage") {
-      discountAmount = (subtotal * foundCoupon.value) / 100;
-    } else {
-      discountAmount = foundCoupon.value;
-    }
+    setAppliedCoupon(found);
+    setCouponDiscount(discount);
 
-    setAppliedCoupon(foundCoupon);
-    setCouponDiscount(discountAmount);
-
-    showToast(`Coupon ${foundCoupon.code} applied successfully`, "success");
+    showToast("Coupon applied");
   };
 
   const removeCoupon = () => {
     setAppliedCoupon(null);
-    setCoupon("");
     setCouponDiscount(0);
-
-    showToast("Coupon removed", "success");
+    setCoupon("");
   };
 
-  // SUCCESS REDIRECT
-  useEffect(() => {
-    if (!orderSuccess) return;
+  const payloadExtras = {
+    ecoPackaging,
+    ecoPackagingFee: ecoFee,
+  };
 
-    const timer = setTimeout(() => {
-      onClearCart?.();
-      onClose?.();
-
-      navigate("/");
-    }, 4000);
-
-    return () => clearTimeout(timer);
-  }, [orderSuccess]);
-
-  // RAZORPAY
   const handleRazorpay = async () => {
     try {
       setLoading(true);
 
-      if (!(window as any).Razorpay) {
-        showToast("Razorpay SDK not loaded", "error");
-        return;
-      }
-
       const res = await fetch(`${BASE_URL}/payment/create-order`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: total }),
       });
 
@@ -209,16 +168,12 @@ export default function CheckoutPage({
         amount: order.amount,
         currency: "INR",
         order_id: order.id,
-
         name: "Doodle Delight",
-        description: "Order Payment",
 
         handler: async (response: any) => {
           const verify = await fetch(`${BASE_URL}/payment/verify-payment`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               ...response,
               userId: user._id,
@@ -227,85 +182,49 @@ export default function CheckoutPage({
               coupon: appliedCoupon?.code || null,
               couponDiscount,
               address: selectedAddress,
+              ...payloadExtras,
             }),
           });
 
           const data = await verify.json();
 
-          if (data.success) {
-            setOrderSuccess(true);
-          } else {
-            showToast("Payment verification failed", "error");
-          }
-        },
-
-        theme: {
-          color: "#f97316",
+          if (data.success) setOrderSuccess(true);
+          else showToast("Payment failed", "error");
         },
       };
 
-      const rzp = new (window as any).Razorpay(options);
-
-      rzp.open();
-    } catch (err) {
-      console.error(err);
-      showToast("Payment failed", "error");
+      new (window as any).Razorpay(options).open();
     } finally {
       setLoading(false);
     }
   };
 
-  // CASH ON DELIVERY
   const handleCOD = async () => {
-    try {
-      setLoading(true);
+    const res = await fetch(`${BASE_URL}/payment/cod-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        cartItems: items,
+        totalAmount: total,
+        coupon: appliedCoupon?.code || null,
+        couponDiscount,
+        address: selectedAddress,
+        ...payloadExtras,
+      }),
+    });
 
-      const res = await fetch(`${BASE_URL}/payment/cod-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user._id,
-          cartItems: items,
-          totalAmount: total,
-          coupon: appliedCoupon?.code || null,
-          couponDiscount,
-          address: selectedAddress,
-        }),
-      });
+    const data = await res.json();
 
-      const data = await res.json();
-
-      if (data.success) {
-        setOrderSuccess(true);
-      } else {
-        showToast("Order failed", "error");
-      }
-    } catch (err) {
-      console.error(err);
-      showToast("Server error", "error");
-    } finally {
-      setLoading(false);
-    }
+    if (data.success) setOrderSuccess(true);
+    else showToast("Order failed", "error");
   };
 
   const handlePlaceOrder = () => {
-    if (!user?._id) {
-      showToast("Please login first", "error");
-      return;
-    }
+    if (!user?._id) return showToast("Login required", "error");
+    if (!selectedAddress) return showToast("Select address", "error");
 
-    if (!selectedAddress) {
-      showToast("Please select delivery address", "error");
-      return;
-    }
-
-    if (paymentMethod === "razorpay") {
-      handleRazorpay();
-    } else {
-      handleCOD();
-    }
+    paymentMethod === "razorpay" ? handleRazorpay() : handleCOD();
   };
 
   return (
@@ -409,11 +328,10 @@ export default function CheckoutPage({
                         key={address._id}
                         onClick={() => setSelectedAddress(address)}
                         className={`border-2 rounded-2xl p-5 cursor-pointer transition-all duration-200
-            ${
-              active
-                ? "border-orange-500 bg-orange-50"
-                : "border-slate-200 hover:border-orange-300"
-            }`}
+            ${active
+                            ? "border-orange-500 bg-orange-50"
+                            : "border-slate-200 hover:border-orange-300"
+                          }`}
                       >
                         <div className="flex justify-between gap-4">
                           <div>
@@ -452,7 +370,56 @@ export default function CheckoutPage({
                 </div>
               )}
             </div>
-            
+
+            <div className="bg-white rounded-3xl p-6 shadow-sm border flex items-center justify-between hover:shadow-md transition">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition ${ecoPackaging ? "bg-green-100" : "bg-slate-100"
+                  }`}>
+                  <span className="text-lg">🌿</span>
+                </div>
+
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">
+                    Eco Packaging
+                  </h2>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    Sustainable, recyclable packaging adds <span className="font-semibold text-slate-700">₹25</span> to your order
+                  </p>
+
+                  <p className={`text-xs mt-2 font-medium ${ecoPackaging ? "text-green-600" : "text-slate-400"
+                    }`}>
+                    {ecoPackaging
+                      ? "Eco-friendly packaging is enabled"
+                      : "You can enable eco packaging anytime"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setEcoPackaging((prev) => {
+                    const newState = !prev;
+
+                    showToast(
+                      newState
+                        ? "🌿 Eco packaging added (+₹25)"
+                        : "Eco packaging removed",
+                      "success"
+                    );
+
+                    return newState;
+                  });
+                }}
+                className={`px-5 py-2 rounded-xl font-bold transition-all duration-200 active:scale-95 shadow-sm ${ecoPackaging
+                    ? "bg-green-500 hover:bg-green-600 text-white"
+                    : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+                  }`}
+              >
+                {ecoPackaging ? "Enabled" : "Add"}
+              </button>
+            </div>
+
             {/* ITEMS */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border">
               <h2 className="text-xl font-bold mb-5">Order Items</h2>
@@ -505,11 +472,10 @@ export default function CheckoutPage({
               <div className="space-y-4">
                 <div
                   onClick={() => setPaymentMethod("razorpay")}
-                  className={`border-2 rounded-2xl p-5 cursor-pointer transition-all ${
-                    paymentMethod === "razorpay"
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-slate-200"
-                  }`}
+                  className={`border-2 rounded-2xl p-5 cursor-pointer transition-all ${paymentMethod === "razorpay"
+                    ? "border-orange-500 bg-orange-50"
+                    : "border-slate-200"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-6 h-6 text-orange-500" />
@@ -526,11 +492,10 @@ export default function CheckoutPage({
 
                 <div
                   onClick={() => setPaymentMethod("cod")}
-                  className={`border-2 rounded-2xl p-5 cursor-pointer transition-all ${
-                    paymentMethod === "cod"
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-slate-200"
-                  }`}
+                  className={`border-2 rounded-2xl p-5 cursor-pointer transition-all ${paymentMethod === "cod"
+                    ? "border-orange-500 bg-orange-50"
+                    : "border-slate-200"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <Wallet className="w-6 h-6 text-green-600" />
@@ -705,11 +670,10 @@ export default function CheckoutPage({
         <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[300]">
           <div
             className={`px-6 py-4 rounded-2xl shadow-2xl font-semibold animate-in slide-in-from-top
-            ${
-              toast.type === "success"
+            ${toast.type === "success"
                 ? "bg-green-50 text-green-700 border border-green-200"
                 : "bg-red-50 text-red-700 border border-red-200"
-            }`}
+              }`}
           >
             {toast.message}
           </div>

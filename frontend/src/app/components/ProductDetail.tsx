@@ -43,6 +43,7 @@ export function ProductDetail({
   const [tab, setTab] = useState("Overview");
   const [variant, setVariant] = useState<any>(null);
   const [showAddedToast, setShowAddedToast] = useState(false);
+  const sustainabilityScore = product?.sustainabilityScore || 0;
 
   const getVariants = (product: any) => {
     if (!product) return [];
@@ -159,10 +160,10 @@ export function ProductDetail({
   const discount =
     safeProduct.wholesalePrice && safeProduct.price
       ? Math.round(
-          ((safeProduct.price - safeProduct.wholesalePrice) /
-            safeProduct.price) *
-            100,
-        )
+        ((safeProduct.price - safeProduct.wholesalePrice) /
+          safeProduct.price) *
+        100,
+      )
       : 0;
 
   const stockText =
@@ -270,6 +271,7 @@ export function ProductDetail({
                 <div className="bg-black/70 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur">
                   {safeProduct.brand}
                 </div>
+
               </div>
 
               <img
@@ -291,10 +293,9 @@ export function ProductDetail({
                   className={`
                     min-w-[80px] h-[80px]
                     rounded-2xl overflow-hidden border-2 transition-all
-                    ${
-                      activeImage === i
-                        ? "border-orange-500 shadow-lg scale-105"
-                        : "border-gray-200 hover:border-orange-300"
+                    ${activeImage === i
+                      ? "border-orange-500 shadow-lg scale-105"
+                      : "border-gray-200 hover:border-orange-300"
                     }
                   `}
                 >
@@ -309,10 +310,9 @@ export function ProductDetail({
                 onClick={() => onToggleWishlist(product)}
                 className={`
                   h-14 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg
-                  ${
-                    isInWishlist
-                      ? "bg-red-500 text-white"
-                      : "bg-white border border-gray-200 hover:border-red-400"
+                  ${isInWishlist
+                    ? "bg-red-500 text-white"
+                    : "bg-white border border-gray-200 hover:border-red-400"
                   }
                 `}
               >
@@ -374,7 +374,7 @@ export function ProductDetail({
 
                     const savings = Math.round(
                       ((safeProduct.price - tier.price) / safeProduct.price) *
-                        100,
+                      100,
                     );
 
                     return (
@@ -382,11 +382,10 @@ export function ProductDetail({
                         key={i}
                         className={`
               relative rounded-2xl border p-4 transition-all duration-300
-              ${
-                active
-                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-500 shadow-2xl scale-105"
-                  : "bg-gray-50 border-gray-200"
-              }
+              ${active
+                            ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-500 shadow-2xl scale-105"
+                            : "bg-gray-50 border-gray-200"
+                          }
             `}
                       >
                         {active && (
@@ -402,9 +401,8 @@ export function ProductDetail({
                         </p>
 
                         <p
-                          className={`text-xs mt-1 font-semibold ${
-                            active ? "text-green-100" : "text-green-600"
-                          }`}
+                          className={`text-xs mt-1 font-semibold ${active ? "text-green-100" : "text-green-600"
+                            }`}
                         >
                           Save {savings}%
                         </p>
@@ -426,11 +424,10 @@ export function ProductDetail({
     shadow-xl
     transition-all duration-300
     flex items-center justify-center gap-3
-    ${
-      safeProduct.stock <= 0
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:bg-gray-900 hover:shadow-2xl hover:scale-[1.02]"
-    }
+    ${safeProduct.stock <= 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-900 hover:shadow-2xl hover:scale-[1.02]"
+                  }
   `}
               >
                 <Zap size={20} />
@@ -446,6 +443,7 @@ export function ProductDetail({
                     ...product,
                     selectedVariant: variant,
                     quantity: qty,
+                    sustainabilityScore: product?.sustainabilityScore,
                   });
 
                   setShowAddedToast(true);
@@ -461,11 +459,10 @@ export function ProductDetail({
     shadow-xl
     transition-all duration-300
     flex items-center justify-center gap-3
-    ${
-      safeProduct.stock <= 0
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:from-orange-600 hover:to-red-600 hover:shadow-2xl hover:scale-[1.02]"
-    }
+    ${safeProduct.stock <= 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:from-orange-600 hover:to-red-600 hover:shadow-2xl hover:scale-[1.02]"
+                  }
   `}
               >
                 <ShoppingCart size={20} />
@@ -553,15 +550,34 @@ export function ProductDetail({
               </div>
             </div>
 
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-bold text-gray-900">Sustainability Score</p>
+                <span className="text-green-600 font-bold">
+                  {sustainabilityScore}/100
+                </span>
+              </div>
+
+              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-green-400 to-emerald-600"
+                  style={{ width: `${sustainabilityScore}%` }}
+                />
+              </div>
+
+              <p className="text-xs text-gray-500 mt-2">
+                Eco-friendly manufacturing & packaging rating
+              </p>
+            </div>
+
             {/* STOCK */}
             <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-4">
               <div>
                 <p className="text-sm text-gray-500">Availability</p>
 
                 <p
-                  className={`font-bold text-lg ${
-                    safeProduct.stock > 0 ? "text-green-600" : "text-red-500"
-                  }`}
+                  className={`font-bold text-lg ${safeProduct.stock > 0 ? "text-green-600" : "text-red-500"
+                    }`}
                 >
                   {stockText}
                 </p>
@@ -586,10 +602,9 @@ export function ProductDetail({
                       onClick={() => setVariant(v)}
                       className={`
                         px-4 py-3 rounded-2xl border font-semibold transition-all
-                        ${
-                          variant?.label === v.label
-                            ? "bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-500 shadow-lg scale-105"
-                            : "bg-gray-50 hover:bg-orange-50 border-gray-200"
+                        ${variant?.label === v.label
+                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-500 shadow-lg scale-105"
+                          : "bg-gray-50 hover:bg-orange-50 border-gray-200"
                         }
                       `}
                     >
@@ -610,10 +625,9 @@ export function ProductDetail({
                     onClick={() => setTab(t)}
                     className={`
                       px-6 py-4 font-semibold transition-all whitespace-nowrap
-                      ${
-                        tab === t
-                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
-                          : "hover:bg-orange-50 text-gray-700"
+                      ${tab === t
+                        ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
+                        : "hover:bg-orange-50 text-gray-700"
                       }
                     `}
                   >
