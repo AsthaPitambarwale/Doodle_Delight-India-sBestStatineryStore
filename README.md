@@ -41,11 +41,12 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ### 📦 Product System
 
-- Product variants (size, color, pack type)
 - Image gallery per product
 - Stock tracking system
 - Low stock alerts
 - Out-of-stock blocking
+- Frequently Bought Together
+- Related Products
 - WholeSale Tiered Pricing for bulk order.
 
 ---
