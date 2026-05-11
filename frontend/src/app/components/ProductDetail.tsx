@@ -8,7 +8,12 @@ import {
   Minus,
   Plus,
   Zap,
-  Tag,
+  RotateCcw,
+  CheckCircle2,
+  Sparkles,
+  BadgePercent,
+  Eye,
+  Share2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -35,7 +40,7 @@ export function ProductDetail({
 }: Props) {
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("Overview");
   const [variant, setVariant] = useState<any>(null);
   const [showAddedToast, setShowAddedToast] = useState(false);
 
@@ -179,171 +184,185 @@ export function ProductDetail({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-end md:items-center p-0 md:p-2">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex justify-center items-end md:items-center">
       <div
         className="
-      bg-white w-full md:max-w-7xl
-      rounded-t-2xl md:rounded-2xl
-      overflow-hidden shadow-2xl
-      animate-in fade-in zoom-in duration-200
-      max-h-[95vh] md:max-h-[85vh]
-      flex flex-col
-    "
+        bg-gradient-to-br from-white to-orange-50
+        w-full md:max-w-7xl
+        h-[100dvh] md:h-[92vh]
+        rounded-t-[28px] md:rounded-[32px]
+        overflow-hidden
+        shadow-[0_20px_80px_rgba(0,0,0,0.35)]
+        border border-white/40
+        flex flex-col
+        animate-in fade-in zoom-in duration-300
+      "
       >
         {/* HEADER */}
-        <div className="flex justify-between items-center px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white">
-          <div>
-            <h2 className="font-bold text-lg">Product Details</h2>
-            <p className="text-xs opacity-80">Doodle Delight</p>
+        <div className="relative overflow-hidden bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white px-5 md:px-7 py-4">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute -top-10 right-0 w-40 h-40 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-10 w-32 h-32 bg-yellow-300 rounded-full blur-3xl" />
           </div>
-          <button onClick={onClose}>
-            <X />
-          </button>
+
+          <div className="relative flex justify-between items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-4 h-4" />
+                <p className="text-xs font-semibold uppercase tracking-widest">
+                  Premium Collection
+                </p>
+              </div>
+
+              <h2 className="font-bold text-xl md:text-2xl">Product Details</h2>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+            >
+              <X />
+            </button>
+          </div>
         </div>
 
         {/* BODY */}
-        <div className="grid md:grid-cols-12 gap-4 md:gap-6 p-4 md:p-5 overflow-y-auto flex-1 pb-24 md:pb-0">
-          {/* LEFT IMAGE SECTION */}
-          <div className="md:col-span-5 space-y-3">
+        <div className="grid md:grid-cols-12 gap-6 p-4 md:p-6 overflow-y-auto flex-1">
+          {/* LEFT */}
+          <div className="md:col-span-5 space-y-4">
             {/* MAIN IMAGE */}
-            <div className="border rounded-xl overflow-hidden bg-gray-100">
-              {images.length > 0 ? (
-                <img
-                  src={images?.[activeImage] || "/placeholder.png"}
-                  className="w-full h-[280px] md:h-[420px] object-contain bg-white transition duration-300"
-                />
-              ) : (
-                <div className="w-full h-[420px] flex items-center justify-center text-gray-400">
-                  No Image Available
+            <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl group">
+              <div className="absolute top-4 left-4 z-10 flex gap-2">
+                {discount > 0 && (
+                  <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                    <BadgePercent size={14} />
+                    {discount}% OFF
+                  </div>
+                )}
+
+                <div className="bg-black/70 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur">
+                  {safeProduct.brand}
                 </div>
-              )}
+              </div>
+
+              <img
+                src={images?.[activeImage] || "/placeholder.png"}
+                className="w-full h-[320px] md:h-[520px] object-contain bg-white p-6 transition duration-500 group-hover:scale-105"
+              />
+
+              <button className="absolute bottom-4 right-4 bg-white/90 backdrop-blur shadow-lg rounded-full p-3 hover:scale-110 transition">
+                <Eye size={18} />
+              </button>
             </div>
 
             {/* THUMBNAILS */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img: string, i: number) => (
-                <img
+                <button
                   key={i}
-                  src={img}
                   onClick={() => setActiveImage(i)}
-                  className={`w-16 h-16 object-cover rounded-md border cursor-pointer ${
-                    activeImage === i ? "border-orange-500" : ""
-                  }`}
-                />
+                  className={`
+                    min-w-[80px] h-[80px]
+                    rounded-2xl overflow-hidden border-2 transition-all
+                    ${
+                      activeImage === i
+                        ? "border-orange-500 shadow-lg scale-105"
+                        : "border-gray-200 hover:border-orange-300"
+                    }
+                  `}
+                >
+                  <img src={img} className="w-full h-full object-cover" />
+                </button>
               ))}
             </div>
 
-            {/* WISHLIST */}
-            <button
-              onClick={() => onToggleWishlist(product)}
-              className={`w-full py-2 rounded-lg flex items-center justify-center gap-2 ${
-                isInWishlist
-                  ? "bg-red-500 text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              <Heart className={isInWishlist ? "fill-white" : ""} />
-              {isInWishlist ? "Saved" : "Add to Wishlist"}
-            </button>
-          </div>
+            {/* ACTIONS */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => onToggleWishlist(product)}
+                className={`
+                  h-14 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg
+                  ${
+                    isInWishlist
+                      ? "bg-red-500 text-white"
+                      : "bg-white border border-gray-200 hover:border-red-400"
+                  }
+                `}
+              >
+                <Heart className={isInWishlist ? "fill-white" : ""} size={18} />
+                {isInWishlist ? "Wishlisted" : "Wishlist"}
+              </button>
 
-          {/* RIGHT INFO SECTION */}
-          <div className="md:col-span-7 space-y-4">
-            {/* BRAND + RATING */}
-            <div className="flex justify-between items-center">
-              <span className="px-3 py-1 text-xs bg-orange-100 text-orange-600 rounded-full">
-                {safeProduct.brand}
-              </span>
-
-              <div className="flex items-center gap-1 text-yellow-500">
-                <Star size={16} fill="currentColor" />
-                <span className="font-semibold">4.4</span>
-                <span className="text-gray-500 text-sm">(2,341)</span>
-              </div>
+              <button className="h-14 rounded-2xl bg-white border border-gray-200 hover:border-orange-400 font-semibold flex items-center justify-center gap-2 shadow-lg transition-all">
+                <Share2 size={18} />
+                Share
+              </button>
             </div>
-
-            {/* TITLE */}
-            <h1 className="text-2xl font-bold">{safeProduct.name}</h1>
-
-            {/* PRICE BLOCK */}
-            <div className="bg-orange-50 border p-4 rounded-xl">
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl md:text-3xl font-bold text-orange-600">
-                  ₹{price}
-                </h2>
-
-                {userType === "wholesale" && (
-                  <>
-                    <span className="line-through text-gray-400">
-                      ₹{safeProduct.price}
-                    </span>
-                    <span className="bg-red-500 text-white px-2 py-1 text-xs rounded">
-                      {discount}% OFF
-                    </span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* DELIVERY INFO */}
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Truck size={16} />
-              Delivery by <b>2–4 days</b>
-            </div>
-            <div className="text-sm font-medium text-red-600">{stockText}</div>
 
             {/* QTY */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="p-2 bg-gray-100 rounded"
-              >
-                <Minus size={16} />
-              </button>
-              <span>{qty}</span>
-              <button
-                onClick={() => setQty((q) => q + 1)}
-                className="p-2 bg-gray-100 rounded"
-              >
-                <Plus size={16} />
-              </button>
-            </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-gray-900">Quantity</p>
+                  <p className="text-sm text-gray-500">
+                    Select required quantity
+                  </p>
+                </div>
 
-            {variants.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold mb-2">Choose Option</h3>
+                <div className="flex items-center gap-3 bg-gray-100 rounded-2xl p-2">
+                  <button
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="w-10 h-10 rounded-xl bg-white shadow flex items-center justify-center hover:bg-orange-50"
+                  >
+                    <Minus size={18} />
+                  </button>
 
-                <div className="flex gap-2 flex-wrap">
-                  {variants.map((v: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => setVariant(v)}
-                      className={`px-3 py-1 border rounded-lg text-sm ${
-                        variant?.label === v.label
-                          ? "bg-orange-500 text-white border-orange-500"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {v.label}
-                    </button>
-                  ))}
+                  <span className="w-10 text-center font-bold text-lg">
+                    {qty}
+                  </span>
+
+                  <button
+                    onClick={() => setQty((q) => q + 1)}
+                    className="w-10 h-10 rounded-xl bg-white shadow flex items-center justify-center hover:bg-orange-50"
+                  >
+                    <Plus size={18} />
+                  </button>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* CTA */}
-            <div className="flex gap-2 md:gap-3">
+            <div className="grid md:grid-cols-2 gap-4">
               <button
                 onClick={buyNow}
-                className="flex-1 bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2"
+                disabled={safeProduct.stock <= 0}
+                className={`
+    bg-black text-white py-4 rounded-2xl
+    font-bold text-lg
+    shadow-xl
+    transition-all duration-300
+    flex items-center justify-center gap-3
+    ${
+      safeProduct.stock <= 0
+        ? "opacity-50 cursor-not-allowed"
+        : "hover:bg-gray-900 hover:shadow-2xl hover:scale-[1.02]"
+    }
+  `}
               >
-                <Zap size={16} />
-                Buy Now
+                <Zap size={20} />
+                {safeProduct.stock <= 0 ? "Out of Stock" : "Buy Now"}
               </button>
 
               <button
+                disabled={safeProduct.stock <= 0}
                 onClick={() => {
-                  onAddToCart({ ...product, quantity: qty });
+                  if (safeProduct.stock <= 0) return;
+
+                  onAddToCart({
+                    ...product,
+                    selectedVariant: variant,
+                    quantity: qty,
+                  });
 
                   setShowAddedToast(true);
 
@@ -351,47 +370,178 @@ export function ProductDetail({
                     setShowAddedToast(false);
                   }, 2500);
                 }}
-                className="flex-1 bg-orange-500 text-white py-3 rounded-xl flex items-center justify-center gap-2"
+                className={`
+    bg-gradient-to-r from-orange-500 to-red-500
+    text-white py-4 rounded-2xl
+    font-bold text-lg
+    shadow-xl
+    transition-all duration-300
+    flex items-center justify-center gap-3
+    ${
+      safeProduct.stock <= 0
+        ? "opacity-50 cursor-not-allowed"
+        : "hover:from-orange-600 hover:to-red-600 hover:shadow-2xl hover:scale-[1.02]"
+    }
+  `}
               >
-                <ShoppingCart size={16} />
-                Add to Cart
+                <ShoppingCart size={20} />
+                {safeProduct.stock <= 0 ? "Out of Stock" : "Add to Cart"}
               </button>
             </div>
+          </div>
 
-            {/* TRUST BADGES */}
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-              <div className="flex items-center gap-2">
-                <Shield size={14} /> Secure Payment
+          {/* RIGHT */}
+          <div className="md:col-span-7 space-y-5">
+            {/* TOP */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">
+                <CheckCircle2 size={16} />
+                Verified Product
               </div>
-              <div className="flex items-center gap-2">
-                <Truck size={14} /> Fast Delivery
+
+              <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full border border-yellow-200">
+                <Star
+                  size={18}
+                  fill="currentColor"
+                  className="text-yellow-500"
+                />
+                <span className="font-bold text-gray-900">4.8</span>
+                <span className="text-gray-500 text-sm">(2,341 reviews)</span>
               </div>
             </div>
 
+            {/* TITLE */}
+            <div>
+              <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">
+                {safeProduct.name}
+              </h1>
+
+              <p className="text-gray-500 mt-2 text-base">
+                Premium quality stationery product crafted for students,
+                professionals & creators.
+              </p>
+            </div>
+
+            {/* PRICE */}
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-6 text-white shadow-2xl">
+              <div className="flex flex-wrap items-center gap-4">
+                <div>
+                  <p className="text-sm opacity-90 mb-1">Special Price</p>
+
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-4xl md:text-5xl font-black">
+                      ₹{price}
+                    </h2>
+
+                    {userType === "wholesale" && (
+                      <span className="line-through text-white/70 text-xl">
+                        ₹{safeProduct.price}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="ml-auto bg-white/20 backdrop-blur px-4 py-3 rounded-2xl">
+                  <p className="text-xs opacity-80">You Save</p>
+                  <p className="font-bold text-lg">{discount}% OFF</p>
+                </div>
+              </div>
+            </div>
+
+            {/* DELIVERY */}
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <Truck className="text-orange-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Fast Delivery</p>
+                <p className="text-sm text-gray-500">2–4 business days</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <Shield className="text-green-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Secure Payment</p>
+                <p className="text-sm text-gray-500">100% protected</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <RotateCcw className="text-blue-500 mb-2" size={22} />
+                <p className="font-semibold text-gray-900">Easy Returns</p>
+                <p className="text-sm text-gray-500">7 day return policy</p>
+              </div>
+            </div>
+
+            {/* STOCK */}
+            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-4">
+              <div>
+                <p className="text-sm text-gray-500">Availability</p>
+
+                <p
+                  className={`font-bold text-lg ${
+                    safeProduct.stock > 0 ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {stockText}
+                </p>
+              </div>
+
+              <div className="bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
+                {safeProduct.stock} Units Left
+              </div>
+            </div>
+
+            {/* VARIANTS */}
+            {variants.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+                <h3 className="font-bold text-gray-900 mb-4 text-lg">
+                  Choose Option
+                </h3>
+
+                <div className="flex flex-wrap gap-3">
+                  {variants.map((v: any, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => setVariant(v)}
+                      className={`
+                        px-4 py-3 rounded-2xl border font-semibold transition-all
+                        ${
+                          variant?.label === v.label
+                            ? "bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-500 shadow-lg scale-105"
+                            : "bg-gray-50 hover:bg-orange-50 border-gray-200"
+                        }
+                      `}
+                    >
+                      <div>{v.label}</div>
+                      <div className="text-xs opacity-80">₹{v.price}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* TABS */}
-            <div className="border-t pt-3">
-              <div className="flex gap-2 text-xs md:text-sm overflow-x-auto">
+            <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden">
+              <div className="flex overflow-x-auto border-b">
                 {["Overview", "Specs", "Reviews"].map((t) => (
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className={`px-3 py-1 rounded whitespace-nowrap ${
-                      tab === t ? "bg-orange-500 text-white" : "bg-gray-100"
-                    }`}
+                    className={`
+                      px-6 py-4 font-semibold transition-all whitespace-nowrap
+                      ${
+                        tab === t
+                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
+                          : "hover:bg-orange-50 text-gray-700"
+                      }
+                    `}
                   >
                     {t}
                   </button>
                 ))}
               </div>
 
-              <div className="text-sm text-gray-600 mt-2">
+              <div className="p-5">
                 {tab === "Overview" && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-2">
-                      Product Description
-                    </h3>
-
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                  <div className="space-y-4">
+                    <p className="text-gray-700 leading-relaxed text-base">
                       {safeProduct.description || product.desc ? (
                         safeProduct.description || product.desc
                       ) : (
@@ -400,40 +550,108 @@ export function ProductDetail({
                         </span>
                       )}
                     </p>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {[
+                        "Premium Quality Finish",
+                        "Long Lasting Build",
+                        "Smooth User Experience",
+                        "Trusted Brand Product",
+                      ].map((f) => (
+                        <div
+                          key={f}
+                          className="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl p-3"
+                        >
+                          <CheckCircle2 size={18} className="text-green-600" />
+                          <span className="text-sm font-medium text-gray-700">
+                            {f}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {tab === "Specs" && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <ul className="space-y-2 text-sm text-gray-700">
-                      <li className="flex items-start gap-2">
-                        <span className="text-green-500 mt-0.5">✓</span>
-                        Premium Quality Material
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-green-500 mt-0.5">✓</span>
-                        Durable Build
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-green-500 mt-0.5">✓</span>
-                        Imported Finish
-                      </li>
-                    </ul>
+                  <div className="space-y-3">
+                    {[
+                      "Premium Quality Material",
+                      "Durable Build & Finish",
+                      "Professional Grade",
+                      "Eco-Friendly Packaging",
+                      "Modern Ergonomic Design",
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-4"
+                      >
+                        <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                        <span className="text-gray-700">{item}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {tab === "Reviews" && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <div className="text-sm text-gray-700 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-yellow-500">⭐</span>
-                        <span className="font-medium text-gray-900">4.4</span>
-                        <span className="text-gray-500">average rating</span>
+                  <div className="space-y-5">
+                    <div className="flex items-center gap-4">
+                      <div className="text-5xl font-black text-gray-900">
+                        4.8
                       </div>
 
-                      <div className="text-gray-500">
-                        2,341 verified reviews
+                      <div>
+                        <div className="flex text-yellow-500">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} size={18} fill="currentColor" />
+                          ))}
+                        </div>
+
+                        <p className="text-gray-500 text-sm mt-1">
+                          Based on 2,341 verified reviews
+                        </p>
                       </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        {
+                          name: "Rahul",
+                          review:
+                            "Excellent quality and premium feel. Worth every rupee.",
+                        },
+                        {
+                          name: "Sneha",
+                          review:
+                            "Packaging and delivery were amazing. Highly recommended.",
+                        },
+                      ].map((r, i) => (
+                        <div
+                          key={i}
+                          className="bg-gray-50 border border-gray-200 rounded-2xl p-4"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white flex items-center justify-center font-bold">
+                              {r.name.charAt(0)}
+                            </div>
+
+                            <div>
+                              <p className="font-semibold text-gray-900">
+                                {r.name}
+                              </p>
+
+                              <div className="flex text-yellow-500">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star key={i} size={14} fill="currentColor" />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <p className="text-gray-600 text-sm leading-relaxed">
+                            {r.review}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -442,47 +660,64 @@ export function ProductDetail({
           </div>
         </div>
 
+        {/* TOAST */}
         {showAddedToast && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-white shadow-2xl rounded-xl px-5 py-3 border flex items-center gap-4 animate-in fade-in slide-in-from-top">
-            <div className="text-green-600 font-semibold">
-              {product ? `${product.name} added to cart` : "Added to cart"}
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100]">
+            <div className="bg-white/95 backdrop-blur-xl border border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.25)] rounded-2xl px-6 py-4 flex items-center gap-5 animate-in fade-in slide-in-from-top">
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle2 className="text-green-600" />
+              </div>
+
+              <div>
+                <p className="font-bold text-gray-900">
+                  Added to Cart Successfully
+                </p>
+
+                <p className="text-sm text-gray-500">{product?.name}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 font-semibold"
+                >
+                  Continue
+                </button>
+
+                <button
+                  onClick={() => {
+                    onClose();
+                    window.location.href = "/checkout";
+                  }}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold"
+                >
+                  Checkout
+                </button>
+              </div>
             </div>
-
-            <button
-              onClick={() => {
-                onClose();
-                // open cart modal (you handle from parent)
-              }}
-              className="text-blue-600 font-semibold"
-            >
-              View Cart
-            </button>
-
-            <button
-              onClick={() => {
-                onClose();
-                window.location.href = "/checkout";
-              }}
-              className="bg-orange-500 text-white px-3 py-1 rounded-lg"
-            >
-              Checkout
-            </button>
           </div>
         )}
 
-        {/* MOBILE STICKY BAR */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3 flex gap-2 z-50 pb-[env(safe-area-inset-bottom)]">
+        {/* MOBILE BAR */}
+        <div className="md:hidden sticky bottom-0 bg-white/95 backdrop-blur-xl border-t border-gray-200 p-4 flex gap-3">
           <button
             onClick={buyNow}
-            className="flex-1 bg-black text-white py-2 rounded"
+            className="flex-1 bg-black text-white h-14 rounded-2xl font-bold"
           >
             Buy Now
           </button>
+
           <button
-            onClick={() => onAddToCart({ ...product, quantity: qty })}
-            className="flex-1 bg-orange-500 text-white py-2 rounded"
+            onClick={() =>
+              onAddToCart({
+                ...product,
+                selectedVariant: variant,
+                quantity: qty,
+              })
+            }
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white h-14 rounded-2xl font-bold"
           >
-            Cart
+            Add Cart
           </button>
         </div>
       </div>
