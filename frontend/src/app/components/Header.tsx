@@ -47,6 +47,11 @@ export function Header({
   const unreadCount =
     notifications?.filter((n) => n?.read === false).length || 0;
 
+  const normalizeCategory = (cat: string | null) => {
+    if (!cat) return null;
+    return cat.trim().toLowerCase();
+  };
+
   useEffect(() => {
     const handleClickOutside = (e: any) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -356,37 +361,37 @@ export function Header({
               All Products
             </button>
             <button
-              onClick={() => onCategoryClick("notebooks")}
+              onClick={() => onCategoryClick(normalizeCategory("notebooks"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               Notebooks & Diaries
             </button>
             <button
-              onClick={() => onCategoryClick("pens-pencils")}
+              onClick={() => onCategoryClick(normalizeCategory("pens-pencils"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               Pens & Pencils
             </button>
             <button
-              onClick={() => onCategoryClick("art-supplies")}
+              onClick={() => onCategoryClick(normalizeCategory("art-supplies"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               Art Supplies
             </button>
             <button
-              onClick={() => onCategoryClick("office-supplies")}
+              onClick={() => onCategoryClick(normalizeCategory("office-supplies"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               Office Supplies
             </button>
             <button
-              onClick={() => onCategoryClick("school-essentials")}
+              onClick={() => onCategoryClick(normalizeCategory("school-essentials"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               School Essentials
             </button>
             <button
-              onClick={() => onCategoryClick("desk-organizers")}
+              onClick={() => onCategoryClick(normalizeCategory("desk-organizers"))}
               className="whitespace-nowrap px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white"
             >
               Desk Organizers
