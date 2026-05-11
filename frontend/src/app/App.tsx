@@ -15,6 +15,8 @@ import { BulkOrderModal, BulkOrderRequest } from "./components/BulkOrderModal";
 import { WishlistModal } from "./components/WishlistModal";
 import { AllProductsPage } from "./components/AllProductsPage";
 import CheckoutPage from "./components/CheckoutPage";
+import { RetailMysteryBox } from "./components/RetailMysteryBox";
+import { WholesaleMysteryBox } from "./components/WholesaleMysteryBox";
 import InvoicePreview from "./components/InvoicePreview";
 import { AboutUs } from "./pages/AboutUs";
 import { ContactUs } from "./pages/ContactUs";
@@ -77,6 +79,7 @@ export default function App() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [wishlistLoaded, setWishlistLoaded] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
+  const [mysteryBoxOpen, setMysteryBoxOpen] = useState(false);
   const navigate = useNavigate();
 
   const [toast, setToast] = useState<{
@@ -504,9 +507,9 @@ export default function App() {
         updated = prev.map((item) =>
           getId(item) === getId(normalized)
             ? {
-                ...item,
-                quantity: item.quantity + normalized.quantity,
-              }
+              ...item,
+              quantity: item.quantity + normalized.quantity,
+            }
             : item,
         );
       } else {
@@ -753,6 +756,7 @@ export default function App() {
                             onRequireLogin={() => setIsAuthModalOpen(true)}
                             onCategorySelect={(cat) => setCurrentCategory(cat)}
                             onNavigate={setCurrentPage}
+                            onOpenMysteryBox={() => setMysteryBoxOpen(true)}
                           />
                           <FeaturesSection />
                           <CategoryShowcase
@@ -811,6 +815,22 @@ export default function App() {
                   />
 
                   {/* MODALS */}
+                  {mysteryBoxOpen && (
+                    user?.userType === "wholesale" ? (
+                      <WholesaleMysteryBox
+                        products={products}
+                        onClose={() => setMysteryBoxOpen(false)}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ) : (
+                      <RetailMysteryBox
+                        products={products}
+                        onClose={() => setMysteryBoxOpen(false)}
+                        onAddToCart={handleAddToCart}
+                      />
+                    )
+                  )}
+
                   <WishlistModal
                     isOpen={isWishlistOpen}
                     onClose={() => setIsWishlistOpen(false)}
@@ -922,9 +942,8 @@ export default function App() {
       {toast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-white shadow-2xl rounded-xl px-5 py-3 border flex items-center gap-4 animate-in fade-in slide-in-from-top">
           <div
-            className={`font-semibold ${
-              toast.type === "success" ? "text-green-600" : "text-red-600"
-            }`}
+            className={`font-semibold ${toast.type === "success" ? "text-green-600" : "text-red-600"
+              }`}
           >
             {toast.type === "success" ? "✅" : "❌"} {toast.message}
           </div>

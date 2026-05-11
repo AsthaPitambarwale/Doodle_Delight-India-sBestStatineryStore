@@ -6,6 +6,7 @@ interface HeroBannerProps {
   user?: any;
   onRequireLogin?: () => void;
   onAllProductsClick?: () => void;
+  onOpenMysteryBox?: () => void;
 }
 
 export function HeroBanner({
@@ -14,6 +15,7 @@ export function HeroBanner({
   user,
   onRequireLogin,
   onAllProductsClick,
+  onOpenMysteryBox,
 }: HeroBannerProps) {
   const goTo = (path: string) => {
     if (onNavigate) onNavigate(path);
@@ -28,6 +30,15 @@ export function HeroBanner({
   const requireLogin = () => {
     if (onRequireLogin) onRequireLogin();
     else window.location.href = "/login";
+  };
+
+  const openMysteryBox = () => {
+    if (!user) {
+      requireLogin();
+      return;
+    }
+
+    onOpenMysteryBox?.();
   };
 
   const openProducts = () => {
@@ -93,32 +104,60 @@ export function HeroBanner({
         </div>
       </div>
 
-      {/* SIDE BANNERS */}
       <div className="flex flex-col gap-4">
-        {/* BULK ORDERS */}
+
+        {/* RETAIL / WHOLESALE MYSTERY BOX SWITCH */}
         <div
-          onClick={() => {
-            if (!user) return requireLogin();
-            goTo("bulk");
+          onClick={(e) => {
+            e.stopPropagation();
+            openMysteryBox();
           }}
-          className="relative bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl overflow-hidden p-6 group cursor-pointer hover:shadow-xl transition-all flex-1"
+          className={`
+      relative text-white rounded-2xl overflow-hidden p-6 cursor-pointer 
+      hover:shadow-2xl transition-all flex-1
+      ${user?.userType === "wholesale"
+              ? "bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600"
+              : "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500"
+            }
+    `}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
 
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-1 bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-xs font-bold mb-3">
-              <TrendingUp className="w-3 h-3" />
-              BEST DEAL
+
+            {/* TAG */}
+            <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold mb-3
+        ${user?.userType === "wholesale"
+                ? "bg-yellow-400 text-indigo-900"
+                : "bg-white text-purple-600"
+              }`}
+            >
+              {user?.userType === "wholesale" ? "💼 WHOLESALE" : "🎁 RETAIL"}
             </div>
 
-            <h3 className="text-xl font-bold mb-2">Wholesale Prices</h3>
+            {/* TITLE */}
+            <h3 className="text-xl font-bold mb-2">
+              {user?.userType === "wholesale"
+                ? "Bulk Mystery Box"
+                : "Build Your Own Kit"}
+            </h3>
 
-            <p className="text-sm text-blue-100 mb-4">
-              Up to 40% OFF on bulk orders
+            {/* SUBTITLE */}
+            <p className={`text-sm mb-4 ${user?.userType === "wholesale"
+                ? "text-blue-100"
+                : "text-pink-100"
+              }`}>
+              {user?.userType === "wholesale"
+                ? "Create high-volume kits & save up to 40%"
+                : "Mix & match products and save more"}
             </p>
 
-            <button className="text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-              Learn More <ChevronRight className="w-4 h-4" />
+            {/* CTA */}
+            <button className="text-sm font-semibold flex items-center gap-1">
+              {user?.userType === "wholesale"
+                ? "Build Bulk Kit"
+                : "Create Kit"}
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -147,6 +186,7 @@ export function HeroBanner({
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );

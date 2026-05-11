@@ -172,8 +172,8 @@ export default function ProductModal({
                 >
                   <option value="">Select category</option>
                   {categories?.map((c: any) => (
-                    <option key={c._id} value={c.name}>
-                      {c.name}
+                    <option key={c._id} value={c.slug}>
+                      {c.slug}
                     </option>
                   ))}
                 </select>

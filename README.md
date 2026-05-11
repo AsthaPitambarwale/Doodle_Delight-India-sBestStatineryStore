@@ -19,6 +19,19 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 
 ## 🛍️ 1. Core E-Commerce Features
 
+###  Advance function 
+🎁 Retail user:
+- Build Your Own Kit
+- random + fun bundles
+- low entry pricing
+
+💼 Wholesale user:
+- Bulk Mystery Box
+- high quantity packs
+- margin-based savings
+
+---
+
 ### 🛒 Advanced Cart System
 
 - Add / remove items
