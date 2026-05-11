@@ -414,7 +414,7 @@ export function ProductDetail({
             )}
 
             {/* CTA */}
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
               <button
                 onClick={buyNow}
                 disabled={safeProduct.stock <= 0}
