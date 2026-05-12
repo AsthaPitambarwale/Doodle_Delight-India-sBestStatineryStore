@@ -126,7 +126,6 @@ const calc = (items: any[]) => {
   const qty = items.reduce((s, i) => s + i.quantity, 0);
 
   let discount = 0.1;
-
   if (qty >= 200) discount = 0.35;
   else if (qty >= 100) discount = 0.25;
   else if (qty >= 50) discount = 0.15;
@@ -142,7 +141,7 @@ const calc = (items: any[]) => {
   };
 };
 
-/* ---------------- MAIN ---------------- */
+/* ---------------- MAIN (RESPONSIVE) ---------------- */
 export function WholesaleMysteryBox({
   products,
   onClose,
@@ -158,9 +157,7 @@ export function WholesaleMysteryBox({
 
       if (exists) {
         return prev.map((i) =>
-          i._id === p._id
-            ? { ...i, quantity: i.quantity + 10 }
-            : i
+          i._id === p._id ? { ...i, quantity: i.quantity + 10 } : i
         );
       }
 
@@ -193,10 +190,14 @@ export function WholesaleMysteryBox({
 
   const pricing = calc(selected);
 
+  const KIT_IMAGE =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxBmUA7hSusdzF49fBYb6HITiY4J4JKu7JtQ&s";
+
   const add = () => {
     onAddToCart({
       _id: "wholesale-" + Date.now(),
       name: "Bulk Mystery Box",
+      image: KIT_IMAGE,
       type: "wholesale",
       price: pricing.final,
       quantity: 1,
@@ -207,23 +208,34 @@ export function WholesaleMysteryBox({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
 
-      <div className="w-full max-w-5xl h-[90vh] bg-white rounded-2xl shadow-2xl flex overflow-hidden relative">
+      <div className="
+        w-full max-w-6xl h-[95vh] sm:h-[90vh]
+        bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row
+        overflow-hidden relative
+      ">
 
         {/* CLOSE */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-xl font-bold"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 text-lg sm:text-xl font-bold"
         >
           ✕
         </button>
 
         {/* LEFT */}
-        <div className="w-1/4 border-r p-3 overflow-y-auto">
-          <h3 className="font-bold mb-3">Products</h3>
+        <div className="
+          w-full lg:w-1/4
+          border-b lg:border-b-0 lg:border-r
+          p-3 overflow-y-auto
+          max-h-[35vh] lg:max-h-full
+        ">
+          <h3 className="font-bold mb-3 text-sm sm:text-base">
+            Products
+          </h3>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-2 gap-2">
             {products.map((p: any) => (
               <ProductCard
                 key={p._id}
@@ -235,22 +247,25 @@ export function WholesaleMysteryBox({
         </div>
 
         {/* CENTER */}
-        <div className="flex-1 p-4 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0 p-3 sm:p-4">
 
+          {/* HEADER */}
           <div className="flex justify-between mb-3">
-            <h2 className="font-bold text-lg">💼 Build Wholesale Kit</h2>
+            <h2 className="font-bold text-base sm:text-lg">
+              💼 Build Wholesale Kit
+            </h2>
 
             <div className="flex gap-2">
               <button
                 onClick={autoFill}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg font-semibold"
+                className="px-2 sm:px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg font-semibold"
               >
                 ⚡ Auto Fill
               </button>
 
               <button
                 onClick={clearAll}
-                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg font-semibold"
+                className="px-2 sm:px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg font-semibold"
               >
                 🗑 Clear
               </button>
@@ -272,9 +287,17 @@ export function WholesaleMysteryBox({
               items={selected.map(i => i._id)}
               strategy={verticalListSortingStrategy}
             >
-              <Canvas isOver={isOver} setNodeRef={setNodeRef}>
+              {/* 🔥 FIXED SCROLL AREA */}
+              <div
+                ref={setNodeRef}
+                className={`
+                  flex-1 min-h-0 overflow-y-auto
+                  rounded-2xl border-2 border-dashed p-3
+                  ${isOver ? "bg-blue-50 border-blue-500" : "bg-gray-50 border-gray-200"}
+                `}
+              >
                 {selected.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-gray-400">
+                  <div className="h-full flex items-center justify-center text-gray-400 text-sm">
                     Drag products here or use Auto Fill
                   </div>
                 ) : (
@@ -289,16 +312,25 @@ export function WholesaleMysteryBox({
                     ))}
                   </div>
                 )}
-              </Canvas>
+              </div>
             </SortableContext>
           </DndContext>
         </div>
 
-        {/* RIGHT */}
-        <div className="w-80 border-l p-4 flex flex-col justify-between">
+        {/* RIGHT - FIXED SUMMARY (NO OVERLAP EVER) */}
+        <div className="
+          w-full lg:w-80
+          border-t lg:border-t-0 lg:border-l
+          p-3 sm:p-4
+          flex flex-col
+          max-h-[40vh] lg:max-h-full
+          overflow-y-auto
+        ">
 
           <div>
-            <h3 className="font-bold text-lg mb-4">📊 Summary</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-3">
+              📊 Summary
+            </h3>
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -321,20 +353,23 @@ export function WholesaleMysteryBox({
 
             <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-3">
               <p className="text-xs text-green-700">Savings</p>
-              <p className="text-xl font-bold text-green-700">
+              <p className="text-lg sm:text-xl font-bold text-green-700">
                 ₹{pricing.saved.toFixed(0)}
               </p>
             </div>
           </div>
 
+          {/* BUTTON ALWAYS SAFE */}
           <button
             onClick={add}
             disabled={selected.length === 0}
-            className={`mt-5 py-3 rounded-xl font-bold transition
-            ${selected.length === 0
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:scale-[1.02]"
-            }`}
+            className={`
+              mt-4 py-3 rounded-xl font-bold transition text-sm sm:text-base
+              ${selected.length === 0
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:scale-[1.02]"
+              }
+            `}
           >
             🚀 Create Kit
           </button>

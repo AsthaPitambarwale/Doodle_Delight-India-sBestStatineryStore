@@ -57,7 +57,7 @@ function KitItem({ item, onQtyChange, onRemove }: any) {
       }}
       {...attributes}
       {...listeners}
-      className="flex items-center gap-3 p-3 bg-white border rounded-xl shadow-sm"
+      className="flex items-center gap-3 p-3 bg-white border rounded-xl shadow-sm cursor-grab"
     >
       <img
         src={
@@ -70,7 +70,9 @@ function KitItem({ item, onQtyChange, onRemove }: any) {
 
       <div className="flex-1">
         <p className="text-xs font-semibold">{item.name}</p>
-        <p className="text-orange-500 font-bold">₹{item.price}</p>
+        <p className="text-blue-600 font-bold">
+          ₹{item.price} × {item.quantity}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">
@@ -143,7 +145,9 @@ export function RetailMysteryBox({
   const KIT_IMAGE =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxBmUA7hSusdzF49fBYb6HITiY4J4JKu7JtQ&s";
 
-  /* ADD PRODUCT */
+  const { isOver, setNodeRef } = useDroppable({ id: "kit-zone" });
+
+  /* ADD */
   const addProduct = (p: any) => {
     const exists = selected.find((x) => x._id === p._id);
 
@@ -168,19 +172,17 @@ export function RetailMysteryBox({
       )
     );
 
-  /* AUTO FILL */
   const autoFill = () => {
     const shuffled = [...products].sort(() => Math.random() - 0.5);
 
-    const randomItems = shuffled.slice(0, 6).map((p) => ({
-      ...p,
-      quantity: Math.floor(Math.random() * 3) + 1,
-    }));
-
-    setSelected(randomItems);
+    setSelected(
+      shuffled.slice(0, 6).map((p) => ({
+        ...p,
+        quantity: Math.floor(Math.random() * 3) + 1,
+      }))
+    );
   };
 
-  /* CLEAR ALL */
   const clearAll = () => setSelected([]);
 
   const pricing = calc(selected);
@@ -199,26 +201,38 @@ export function RetailMysteryBox({
     onClose();
   };
 
-  const { isOver, setNodeRef } = useDroppable({ id: "kit-zone" });
-
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
 
-      <div className="w-full max-w-5xl h-[90vh] bg-white rounded-2xl shadow-2xl flex overflow-hidden relative">
+      <div className="
+      w-full max-w-6xl
+      h-[100dvh] sm:h-[90vh]
+      bg-white rounded-2xl shadow-2xl
+      flex flex-col lg:flex-row
+      overflow-hidden relative
+    ">
 
         {/* CLOSE */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-xl font-bold"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 text-xl font-bold z-10"
         >
           ✕
         </button>
 
-        {/* LEFT */}
-        <div className="w-1/4 border-r p-3 overflow-y-auto">
-          <h3 className="font-bold mb-3">Products</h3>
+        {/* LEFT - PRODUCTS */}
+        <div className="
+        w-full lg:w-1/4
+        border-b lg:border-b-0 lg:border-r
+        p-2 sm:p-3
+        overflow-y-auto
+        max-h-[30vh] lg:max-h-none
+      ">
+          <h3 className="font-bold mb-2 text-sm sm:text-base">
+            Products
+          </h3>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-2 gap-2">
             {products.map((p: any) => (
               <ProductCard
                 key={p._id}
@@ -229,113 +243,147 @@ export function RetailMysteryBox({
           </div>
         </div>
 
-        {/* CENTER */}
-        <div className="flex-1 p-4 flex flex-col">
+        {/* CENTER - KIT */}
+        <div className="
+        flex-1
+        p-2 sm:p-4
+        flex flex-col
+        min-h-0
+        overflow-hidden
+      ">
 
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-lg">🧩 Build Your Kit</h2>
+          {/* HEADER */}
+          <div className="
+          flex flex-col sm:flex-row
+          sm:items-center sm:justify-between
+          gap-2 mb-2 sm:mb-3
+        ">
+            <h2 className="font-bold text-base sm:text-lg">
+              🧩 Build Kit
+            </h2>
 
             <div className="flex gap-2">
               <button
                 onClick={autoFill}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg font-semibold"
+                className="px-2 sm:px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg font-semibold"
               >
                 ⚡ Auto Fill
               </button>
 
               <button
                 onClick={clearAll}
-                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg font-semibold"
+                className="px-2 sm:px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg font-semibold"
               >
                 🗑 Clear
               </button>
             </div>
           </div>
 
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={(event) => {
-              const { active, over } = event;
-              if (!over || active.id === over.id) return;
+          {/* DRAG AREA */}
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => {
+                const { active, over } = event;
+                if (!over) return;
 
-              const oldIndex = selected.findIndex(
-                (i) => i._id === active.id
-              );
+                const oldIndex = selected.findIndex(i => i._id === active.id);
+                const newIndex = selected.findIndex(i => i._id === over.id);
 
-              const newIndex = selected.findIndex(
-                (i) => i._id === over.id
-              );
-
-              setSelected(arrayMove(selected, oldIndex, newIndex));
-            }}
-          >
-            <SortableContext
-              items={selected.map((i) => i._id)}
-              strategy={verticalListSortingStrategy}
+                setSelected(arrayMove(selected, oldIndex, newIndex));
+              }}
             >
-              <Canvas isOver={isOver} setNodeRef={setNodeRef}>
-                {selected.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-gray-400">
-                    Drag products here or click to add
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {selected.map((item) => (
-                      <KitItem
-                        key={item._id}
-                        item={item}
-                        onQtyChange={updateQty}
-                        onRemove={remove}
-                      />
-                    ))}
-                  </div>
-                )}
-              </Canvas>
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={selected.map(i => i._id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div
+                  ref={setNodeRef}
+                  className={`
+                  h-full
+                  overflow-y-auto
+                  rounded-2xl
+                  border-2 border-dashed
+                  p-2 sm:p-4
+                  ${isOver ? "bg-orange-50 border-orange-500" : "bg-gray-50"}
+                `}
+                >
+                  {selected.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                      Tap products to add
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {selected.map((item) => (
+                        <KitItem
+                          key={item._id}
+                          item={item}
+                          onQtyChange={updateQty}
+                          onRemove={remove}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
         </div>
 
-        {/* RIGHT */}
-        <div className="w-80 border-l bg-white p-4 flex flex-col justify-between">
+        {/* RIGHT - SUMMARY (FIXED OVERLAP ISSUE) */}
+        <div className="
+        w-full lg:w-80
+        border-t lg:border-t-0 lg:border-l
+        p-3 sm:p-4
+        bg-white
+        flex flex-col
+        gap-3
+        max-h-[35vh] lg:max-h-none
+        overflow-y-auto
+      ">
 
-          <div>
-            <h3 className="font-bold text-lg mb-4">📊 Kit Summary</h3>
+          <h3 className="font-bold text-base sm:text-lg">
+            📊 Summary
+          </h3>
 
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Items</span>
-                <span className="font-semibold">{pricing.qty}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-gray-500">Base</span>
-                <span className="font-semibold">₹{pricing.total.toFixed(0)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-gray-500">Discount</span>
-                <span className="text-blue-600 font-bold">
-                  {(pricing.discount * 100).toFixed(0)}%
-                </span>
-              </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Items</span>
+              <span className="font-semibold">{pricing.qty}</span>
             </div>
 
-            <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-3">
-              <p className="text-xs text-green-700">Savings</p>
-              <p className="text-xl font-bold text-green-700">
-                ₹{pricing.saved.toFixed(0)}
-              </p>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Base</span>
+              <span className="font-semibold">
+                ₹{pricing.total.toFixed(0)}
+              </span>
             </div>
+
+            <div className="flex justify-between">
+              <span className="text-gray-500">Discount</span>
+              <span className="text-blue-600 font-bold">
+                {(pricing.discount * 100).toFixed(0)}%
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+            <p className="text-xs text-green-700">Savings</p>
+            <p className="text-lg sm:text-xl font-bold text-green-700">
+              ₹{pricing.saved.toFixed(0)}
+            </p>
           </div>
 
           <button
             onClick={add}
             disabled={selected.length === 0}
-            className={`mt-5 py-3 rounded-xl font-bold transition
+            className={`
+            mt-auto py-3 rounded-xl font-bold transition text-sm sm:text-base
             ${selected.length === 0
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:scale-[1.02]"
-              }`}
+              }
+          `}
           >
             🚀 Create Kit
           </button>

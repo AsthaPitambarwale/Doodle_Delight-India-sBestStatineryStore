@@ -20,6 +20,14 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 ## 🛍️ 1. Core E-Commerce Features
 
 ###  Advance function 
+
+🧠 Smart Kit Builder System:
+- drag & drop bundles
+- auto discount engine
+- savings calculator
+- image fallback system
+- unified cart payload
+
 🎁 Retail user:
 - Build Your Own Kit
 - random + fun bundles
