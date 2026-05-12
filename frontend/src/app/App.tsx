@@ -11,7 +11,7 @@ import { Footer } from "./components/Footer";
 import { AuthModal, SignupData } from "./components/AuthModal";
 import { MyAccount } from "./components/MyAccount";
 import { FilterSort, FilterOptions } from "./components/FilterSort";
-import { BulkOrderModal, BulkOrderRequest } from "./components/BulkOrderModal";
+import { BulkOrderEngine } from "./components/BulkOrderEngine";
 import { WishlistModal } from "./components/WishlistModal";
 import { AllProductsPage } from "./components/AllProductsPage";
 import CheckoutPage from "./components/CheckoutPage";
@@ -64,6 +64,8 @@ export default function App() {
   const [skipCartSync, setSkipCartSync] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [bulkCheckoutItems, setBulkCheckoutItems] = useState<any[]>([]);
+  const [showBulkEngine, setShowBulkEngine] = useState(false);
 
   //UI STATE
   const [loading, setLoading] = useState(true);
@@ -72,7 +74,9 @@ export default function App() {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
-  const [isBulkOrderOpen, setIsBulkOrderOpen] = useState(false);
+  const [bulkOrderMode, setBulkOrderMode] = useState<
+    "fast" | "repeat" | "split" | null
+  >(null);
   const [currentPage, setCurrentPage] = useState<string | null>(null);
   const [trackOrderId, setTrackOrderId] = useState<string | null>(null);
   const [invoiceOrderId, setInvoiceOrderId] = useState<string | null>(null);
@@ -595,14 +599,26 @@ export default function App() {
     setWishlistItems([]);
   };
 
+  const openBulkMode = (mode: "fast" | "repeat" | "split") => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setBulkOrderMode(mode);
+  };
+
   const handleBulkOrder = async (data: BulkOrderRequest) => {
     try {
+      const payload = {
+        ...data,
+        orderType: data.orderType || "fast",
+      };
+
       const res = await fetch(`${BASE_URL}/bulk-orders`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
@@ -615,11 +631,20 @@ export default function App() {
         return;
       }
 
-      setToast({ message: "Bulk order submitted!", type: "success" });
-      console.log(result);
+      setBulkOrderMode(null);
+
+      const msg =
+        payload.orderType === "repeat"
+          ? "Reorder request submitted!"
+          : payload.orderType === "split"
+            ? "Multi-address order submitted!"
+            : "Bulk order submitted!";
+
+      setToast({ message: msg, type: "success" });
+
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      setToast({ message: "Server error", type: "error" });
     }
   };
 
@@ -727,7 +752,7 @@ export default function App() {
                     userType={userType}
                     onUserTypeChange={setUserType}
                     user={user}
-                    onBulkOrderClick={() => setIsBulkOrderOpen(true)}
+                    onBulkOrderClick={() => setShowBulkEngine(true)}
                     notifications={notifications}
                   />
 
@@ -757,6 +782,9 @@ export default function App() {
                             onCategorySelect={(cat) => setCurrentCategory(cat)}
                             onNavigate={setCurrentPage}
                             onOpenMysteryBox={() => setMysteryBoxOpen(true)}
+                            onOpenBulkOrderFast={() => setShowBulkEngine(true)}
+                            onOpenBulkOrderRepeat={() => setShowBulkEngine(true)}
+                            onOpenBulkOrderSplit={() => setShowBulkEngine(true)}
                           />
                           <FeaturesSection />
                           <CategoryShowcase
@@ -870,13 +898,38 @@ export default function App() {
                       onOrderPlaced={() => {
                         setCartItems([]);
                         setIsCheckoutOpen(false);
-                        setToast({ message: "Order placed!", type: "success" });
+
+                        setToast({
+                          message: "Order placed!",
+                          type: "success",
+                        });
 
                         if (user?._id) fetchOrders(user._id);
                       }}
                       onClose={() => setIsCheckoutOpen(false)}
-                      onSuccess={() => setShowCheckout(false)}
                       onClearCart={handleClearCart}
+                    />
+                  )}
+                  {/* BULK DIRECT CHECKOUT */}
+                  {showCheckout && (
+                    <CheckoutPage
+                      items={bulkCheckoutItems}
+                      user={user}
+                      userType={userType}
+                      onBack={() => setShowCheckout(false)}
+                      onOrderPlaced={() => {
+                        setBulkCheckoutItems([]);
+                        setShowCheckout(false);
+
+                        setToast({
+                          message: "Bulk order placed!",
+                          type: "success",
+                        });
+
+                        if (user?._id) fetchOrders(user._id);
+                      }}
+                      onClose={() => setShowCheckout(false)}
+                      onClearCart={() => { }}
                     />
                   )}
                   <ProductDetail
@@ -917,11 +970,29 @@ export default function App() {
                     onRefreshOrders={() => user?._id && fetchOrders(user._id)}
                   />
 
-                  <BulkOrderModal
-                    isOpen={isBulkOrderOpen}
-                    onClose={() => setIsBulkOrderOpen(false)}
-                    onSubmit={handleBulkOrder}
-                  />
+                  {/* BULK ENGINE */}
+                  {showBulkEngine && (
+                    <BulkOrderEngine
+                      mode="fast"
+                      userId={user?._id}
+                      onClose={() => setShowBulkEngine(false)}
+                      onSubmit={(data: any) => {
+                        setBulkCheckoutItems(
+                          (data.items || []).map((item: any) => ({
+                            ...item,
+
+                            image:
+                              item.image ||
+                              (Array.isArray(item.images) && item.images.length > 0
+                                ? item.images[0]
+                                : "/placeholder.png"),
+                          })),
+                        );
+                        setShowBulkEngine(false);
+                        setShowCheckout(true);
+                      }}
+                    />
+                  )}
                 </>
               )}
             </div>

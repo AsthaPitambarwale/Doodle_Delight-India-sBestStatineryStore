@@ -37,6 +37,10 @@ A modern, full-featured **MERN-style e-commerce web application** with advanced 
 - Bulk Mystery Box
 - high quantity packs
 - margin-based savings
+- WholeSale Tiered Pricing for bulk order.
+- Bulk Quick Order = FAST INPUT
+- Corporate Reorder = REPEAT BUY
+- Multi Address = SPLIT DELIVERY
 
 ---
 

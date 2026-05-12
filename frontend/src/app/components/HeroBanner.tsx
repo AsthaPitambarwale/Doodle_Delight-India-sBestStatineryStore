@@ -1,4 +1,4 @@
-import { ChevronRight, Sparkles, TrendingUp } from "lucide-react";
+import { ChevronRight, Sparkles, TrendingUp, Package } from "lucide-react";
 
 interface HeroBannerProps {
   onNavigate?: (page: string) => void;
@@ -7,6 +7,9 @@ interface HeroBannerProps {
   onRequireLogin?: () => void;
   onAllProductsClick?: () => void;
   onOpenMysteryBox?: () => void;
+  onOpenBulkOrderFast?: () => void;
+  onOpenBulkOrderRepeat?: () => void;
+  onOpenBulkOrderSplit?: () => void;
 }
 
 export function HeroBanner({
@@ -16,6 +19,9 @@ export function HeroBanner({
   onRequireLogin,
   onAllProductsClick,
   onOpenMysteryBox,
+  onOpenBulkOrderFast,
+  onOpenBulkOrderRepeat,
+  onOpenBulkOrderSplit,
 }: HeroBannerProps) {
   const goTo = (path: string) => {
     if (onNavigate) onNavigate(path);
@@ -47,7 +53,6 @@ export function HeroBanner({
       return;
     }
 
-    // ✅ IMPORTANT: this must trigger parent state change
     onAllProductsClick?.();
   };
 
@@ -74,12 +79,10 @@ export function HeroBanner({
           </h1>
 
           <p className="text-lg md:text-xl mb-6 text-orange-50 max-w-lg">
-            Shop 5000+ products from top brands. Free delivery on orders above
-            ₹500
+            Shop 5000+ products from top brands. Free delivery on orders above ₹500
           </p>
 
           <div className="flex flex-wrap gap-3">
-            {/* SHOP NOW */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -90,7 +93,6 @@ export function HeroBanner({
               Shop Now
             </button>
 
-            {/* EXPLORE DEALS */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -106,53 +108,50 @@ export function HeroBanner({
 
       <div className="flex flex-col gap-4">
 
-        {/* RETAIL / WHOLESALE MYSTERY BOX SWITCH */}
+        {/* MYSTERY BOX */}
         <div
           onClick={(e) => {
             e.stopPropagation();
             openMysteryBox();
           }}
           className={`
-      relative text-white rounded-2xl overflow-hidden p-6 cursor-pointer 
-      hover:shadow-2xl transition-all flex-1
-      ${user?.userType === "wholesale"
+            relative text-white rounded-2xl overflow-hidden p-6 cursor-pointer 
+            hover:shadow-2xl transition-all flex-1
+            ${user?.userType === "wholesale"
               ? "bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600"
               : "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500"
             }
-    `}
+          `}
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
 
           <div className="relative z-10">
 
-            {/* TAG */}
-            <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold mb-3
-        ${user?.userType === "wholesale"
-                ? "bg-yellow-400 text-indigo-900"
-                : "bg-white text-purple-600"
-              }`}
+            <div
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold mb-3
+              ${user?.userType === "wholesale"
+                  ? "bg-yellow-400 text-indigo-900"
+                  : "bg-white text-purple-600"
+                }`}
             >
               {user?.userType === "wholesale" ? "💼 WHOLESALE" : "🎁 RETAIL"}
             </div>
 
-            {/* TITLE */}
             <h3 className="text-xl font-bold mb-2">
               {user?.userType === "wholesale"
                 ? "Bulk Mystery Box"
                 : "Build Your Own Kit"}
             </h3>
 
-            {/* SUBTITLE */}
             <p className={`text-sm mb-4 ${user?.userType === "wholesale"
-                ? "text-blue-100"
-                : "text-pink-100"
+              ? "text-blue-100"
+              : "text-pink-100"
               }`}>
               {user?.userType === "wholesale"
                 ? "Create high-volume kits & save up to 40%"
                 : "Mix & match products and save more"}
             </p>
 
-            {/* CTA */}
             <button className="text-sm font-semibold flex items-center gap-1">
               {user?.userType === "wholesale"
                 ? "Build Bulk Kit"
@@ -162,30 +161,90 @@ export function HeroBanner({
           </div>
         </div>
 
-        {/* SCHOOL ESSENTIALS */}
-        <div
-          onClick={() => goToCategory("school-essentials")}
-          className="relative bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl overflow-hidden p-6 group cursor-pointer hover:shadow-xl transition-all flex-1"
-        >
-          <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 translate-x-12 pointer-events-none" />
+        {/* LOGIN / SCHOOL ESSENTIALS */}
+        {!user ? (
+          <div
+            onClick={requireLogin}
+            className="relative bg-gradient-to-br from-gray-700 to-gray-900 text-white rounded-2xl overflow-hidden p-6 cursor-pointer hover:shadow-xl transition-all flex-1"
+          >
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-1 bg-white text-black px-3 py-1 rounded-full text-xs font-bold mb-3">
+                🔒 LOGIN REQUIRED
+              </div>
 
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-1 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold mb-3">
-              <Sparkles className="w-3 h-3" />
-              NEW ARRIVAL
+              <h3 className="text-xl font-bold mb-2">
+                Unlock Member Benefits
+              </h3>
+
+              <p className="text-sm text-gray-200 mb-4">
+                Sign in to access retail deals, bulk pricing & mystery boxes
+              </p>
+
+              <button className="text-sm font-semibold flex items-center gap-1">
+                Login / Sign Up <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-
-            <h3 className="text-xl font-bold mb-2">School Essentials</h3>
-
-            <p className="text-sm text-green-100 mb-4">
-              Complete range starting at ₹49
-            </p>
-
-            <button className="text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-              Shop Now <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
-        </div>
+        ) : (
+          <>
+            {user?.userType === "retail" && (
+              <div
+                onClick={() => goToCategory("school-essentials")}
+                className="relative bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl overflow-hidden p-6 group cursor-pointer hover:shadow-xl transition-all flex-1"
+              >
+                <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 translate-x-12 pointer-events-none" />
+
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-1 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    <Sparkles className="w-3 h-3" />
+                    NEW ARRIVAL
+                  </div>
+
+                  <h3 className="text-xl font-bold mb-2">
+                    School Essentials
+                  </h3>
+
+                  <p className="text-sm text-green-100 mb-4">
+                    Complete range starting at ₹49
+                  </p>
+
+                  <button className="text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+                    Shop Now <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+            {user?.userType === "wholesale" && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenBulkOrderFast?.(); 
+                }}
+                className="relative bg-gradient-to-br from-slate-700 to-slate-900 text-white rounded-2xl overflow-hidden p-6 group cursor-pointer hover:shadow-xl transition-all flex-1"              >
+                <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 translate-x-12 pointer-events-none" />
+
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-1 bg-white text-blue-700 px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    <Package className="w-3 h-3" />
+                    BULK ORDER HUB
+                  </div>
+
+                  <h3 className="text-xl font-bold mb-2">
+                    Wholesale Ordering
+                  </h3>
+
+                  <p className="text-sm text-blue-100 mb-4">
+                    Bulk pricing • Split delivery • Corporate reorder
+                  </p>
+
+                  <button className="text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+                    Open Order Center <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
       </div>
     </div>

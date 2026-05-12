@@ -36,6 +36,14 @@ const AVAILABLE_COUPONS = [
     description: "Flat ₹100 OFF",
   },
 ];
+interface CheckoutPageProps {
+  items: any[];
+  user: any;
+  userType: string;
+  onClose: () => void;
+  onClearCart?: () => void;
+  deliveries?: any[];
+}
 
 export default function CheckoutPage({
   items,
@@ -43,8 +51,12 @@ export default function CheckoutPage({
   userType,
   onClose,
   onClearCart,
-}: any) {
+  deliveries,
+}: CheckoutPageProps) {
   const navigate = useNavigate();
+
+  const isSplitOrder =
+    Array.isArray(deliveries) && deliveries.length > 0;
 
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
     "razorpay",
@@ -182,6 +194,8 @@ export default function CheckoutPage({
               coupon: appliedCoupon?.code || null,
               couponDiscount,
               address: selectedAddress,
+              splitDeliveries: deliveries || [],
+              isSplitOrder,
               ...payloadExtras,
             }),
           });
@@ -210,6 +224,8 @@ export default function CheckoutPage({
         coupon: appliedCoupon?.code || null,
         couponDiscount,
         address: selectedAddress,
+        splitDeliveries: deliveries || [],
+        isSplitOrder,
         ...payloadExtras,
       }),
     });
@@ -222,7 +238,8 @@ export default function CheckoutPage({
 
   const handlePlaceOrder = () => {
     if (!user?._id) return showToast("Login required", "error");
-    if (!selectedAddress) return showToast("Select address", "error");
+    if (!isSplitOrder && !selectedAddress)
+      return showToast("Select address", "error");
 
     paymentMethod === "razorpay" ? handleRazorpay() : handleCOD();
   };
@@ -412,14 +429,91 @@ export default function CheckoutPage({
                   });
                 }}
                 className={`px-5 py-2 rounded-xl font-bold transition-all duration-200 active:scale-95 shadow-sm ${ecoPackaging
-                    ? "bg-green-500 hover:bg-green-600 text-white"
-                    : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-slate-200 hover:bg-slate-300 text-slate-700"
                   }`}
               >
                 {ecoPackaging ? "Enabled" : "Add"}
               </button>
             </div>
 
+            {/* SPLIT DELIVERY VIEW */}
+            {isSplitOrder && (
+              <div className="bg-white rounded-3xl p-6 shadow-sm border">
+                <div className="flex items-center gap-3 mb-5">
+                  <Truck className="w-6 h-6 text-orange-500" />
+
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">
+                      Split Delivery Addresses
+                    </h2>
+
+                    <p className="text-sm text-slate-500">
+                      Products will be delivered to multiple locations
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {deliveries.map((delivery: any, index: number) => (
+                    <div
+                      key={index}
+                      className="border rounded-2xl p-5 bg-slate-50"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-bold text-slate-800">
+                          Address #{index + 1}
+                        </h3>
+
+                        <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-semibold">
+                          Split Delivery
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 text-sm text-slate-700">
+                        <p className="font-bold text-slate-800">
+                          {delivery.fullName}
+                        </p>
+
+                        <p>{delivery.phone}</p>
+
+                        <p>{delivery.addressLine}</p>
+
+                        <p>
+                          {delivery.city}, {delivery.state} - {delivery.pincode}
+                        </p>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        {items.map((item: any) => {
+                          const qty =
+                            Number(
+                              delivery.quantities?.[item._id]
+                            ) || 0;
+
+                          if (qty <= 0) return null;
+
+                          return (
+                            <div
+                              key={item._id}
+                              className="flex justify-between text-sm bg-white border rounded-xl px-3 py-2"
+                            >
+                              <span className="font-medium">
+                                {item.name}
+                              </span>
+
+                              <span className="font-bold text-orange-600">
+                                Qty: {qty}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* ITEMS */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border">
               <h2 className="text-xl font-bold mb-5">Order Items</h2>
@@ -437,7 +531,12 @@ export default function CheckoutPage({
                       className="flex gap-4 border rounded-2xl p-4 hover:shadow-md transition"
                     >
                       <img
-                        src={item.image}
+                        src={
+                          item.image ||
+                          (Array.isArray(item.images) && item.images.length > 0
+                            ? item.images[0]
+                            : "/placeholder.png")
+                        }
                         alt={item.name}
                         className="w-24 h-24 rounded-2xl object-cover border"
                       />
