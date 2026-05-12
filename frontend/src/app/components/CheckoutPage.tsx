@@ -42,6 +42,8 @@ interface CheckoutPageProps {
   userType: string;
   onClose: () => void;
   onClearCart?: () => void;
+  onBack?: () => void;
+  onOrderPlaced?: () => void;
   deliveries?: any[];
 }
 
@@ -51,6 +53,8 @@ export default function CheckoutPage({
   userType,
   onClose,
   onClearCart,
+  onBack,
+  onOrderPlaced,
   deliveries,
 }: CheckoutPageProps) {
   const navigate = useNavigate();
@@ -113,8 +117,22 @@ export default function CheckoutPage({
     return items.reduce((sum: number, item: any) => {
       const price =
         userType === "wholesale"
-          ? item.wholesalePrice || 0
-          : item.price || 0;
+          ? Number(
+            item.wholesalePrice ??
+            item.price ??
+            item.finalPrice ??
+            item.salePrice ??
+            item.mysteryBoxPrice ??
+            0
+          )
+          : Number(
+            item.price ??
+            item.finalPrice ??
+            item.salePrice ??
+            item.mysteryBoxPrice ??
+            item.wholesalePrice ??
+            0
+          );
 
       return sum + price * item.quantity;
     }, 0);
@@ -202,7 +220,15 @@ export default function CheckoutPage({
 
           const data = await verify.json();
 
-          if (data.success) setOrderSuccess(true);
+          if (data.success) {
+            setOrderSuccess(true);
+
+            setTimeout(() => {
+              onOrderPlaced?.();
+              onClearCart?.();
+              onClose();
+            }, 2000);
+          }
           else showToast("Payment failed", "error");
         },
       };
@@ -232,7 +258,15 @@ export default function CheckoutPage({
 
     const data = await res.json();
 
-    if (data.success) setOrderSuccess(true);
+    if (data.success) {
+      setOrderSuccess(true);
+
+      setTimeout(() => {
+        onOrderPlaced?.();
+        onClearCart?.();
+        onClose();
+      }, 2000);
+    }
     else showToast("Order failed", "error");
   };
 
@@ -257,12 +291,23 @@ export default function CheckoutPage({
             <p className="text-slate-500 mt-1">Complete your purchase safely</p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-3 bg-white rounded-full shadow hover:scale-105 transition"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="px-4 py-2 bg-white rounded-xl shadow font-medium hover:bg-slate-50"
+              >
+                Back
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="p-3 bg-white rounded-full shadow hover:scale-105 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -522,8 +567,22 @@ export default function CheckoutPage({
                 {items.map((item: any) => {
                   const price =
                     userType === "wholesale"
-                      ? item.wholesalePrice || 0
-                      : item.price || 0;
+                      ? Number(
+                        item.wholesalePrice ??
+                        item.price ??
+                        item.finalPrice ??
+                        item.salePrice ??
+                        item.mysteryBoxPrice ??
+                        0
+                      )
+                      : Number(
+                        item.price ??
+                        item.finalPrice ??
+                        item.salePrice ??
+                        item.mysteryBoxPrice ??
+                        item.wholesalePrice ??
+                        0
+                      );
 
                   return (
                     <div
