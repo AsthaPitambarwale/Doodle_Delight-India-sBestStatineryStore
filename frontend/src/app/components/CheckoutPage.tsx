@@ -349,7 +349,13 @@ export default function CheckoutPage({
                 </div>
 
                 <button
-                  onClick={() => navigate("/account")}
+                  onClick={() =>
+                    navigate("/account", {
+                      state: {
+                        activeTab: "addresses",
+                      },
+                    })
+                  }
                   className="text-orange-500 font-semibold text-sm"
                 >
                   Manage
