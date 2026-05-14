@@ -968,6 +968,7 @@ export default function App() {
                     onDownloadInvoice={handleDownloadInvoice}
                     onPreviewInvoice={handleOpenInvoice}
                     onRefreshOrders={() => user?._id && fetchOrders(user._id)}
+                    defaultTab={accountTab}
                   />
 
                   {/* BULK ENGINE */}

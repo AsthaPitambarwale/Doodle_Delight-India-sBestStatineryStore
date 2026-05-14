@@ -81,7 +81,6 @@ export default function CheckoutPage({
 
   const [ecoPackaging, setEcoPackaging] = useState(false);
   const ECO_PACKAGING_FEE = 25;
-
   const [toast, setToast] = useState<any>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -356,7 +355,7 @@ export default function CheckoutPage({
                       },
                     })
                   }
-                  className="text-orange-500 font-semibold text-sm"
+                  className="text-orange-500 font-semibold text-sm hover:text-orange-600 transition"
                 >
                   Manage
                 </button>
@@ -439,55 +438,6 @@ export default function CheckoutPage({
               )}
             </div>
 
-            <div className="bg-white rounded-3xl p-6 shadow-sm border flex items-center justify-between hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition ${ecoPackaging ? "bg-green-100" : "bg-slate-100"
-                  }`}>
-                  <span className="text-lg">🌿</span>
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-slate-800">
-                    Eco Packaging
-                  </h2>
-
-                  <p className="text-sm text-slate-500 mt-1">
-                    Sustainable, recyclable packaging adds <span className="font-semibold text-slate-700">₹25</span> to your order
-                  </p>
-
-                  <p className={`text-xs mt-2 font-medium ${ecoPackaging ? "text-green-600" : "text-slate-400"
-                    }`}>
-                    {ecoPackaging
-                      ? "Eco-friendly packaging is enabled"
-                      : "You can enable eco packaging anytime"}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setEcoPackaging((prev) => {
-                    const newState = !prev;
-
-                    showToast(
-                      newState
-                        ? "🌿 Eco packaging added (+₹25)"
-                        : "Eco packaging removed",
-                      "success"
-                    );
-
-                    return newState;
-                  });
-                }}
-                className={`px-5 py-2 rounded-xl font-bold transition-all duration-200 active:scale-95 shadow-sm ${ecoPackaging
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-slate-200 hover:bg-slate-300 text-slate-700"
-                  }`}
-              >
-                {ecoPackaging ? "Enabled" : "Add"}
-              </button>
-            </div>
-
             {/* SPLIT DELIVERY VIEW */}
             {isSplitOrder && (
               <div className="bg-white rounded-3xl p-6 shadow-sm border">
@@ -565,6 +515,56 @@ export default function CheckoutPage({
                 </div>
               </div>
             )}
+
+            <div className="bg-white rounded-3xl p-6 shadow-sm border flex items-center justify-between hover:shadow-md transition">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition ${ecoPackaging ? "bg-green-100" : "bg-slate-100"
+                  }`}>
+                  <span className="text-lg">🌿</span>
+                </div>
+
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">
+                    Eco Packaging
+                  </h2>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    Sustainable, recyclable packaging adds <span className="font-semibold text-slate-700">₹25</span> to your order
+                  </p>
+
+                  <p className={`text-xs mt-2 font-medium ${ecoPackaging ? "text-green-600" : "text-slate-400"
+                    }`}>
+                    {ecoPackaging
+                      ? "Eco-friendly packaging is enabled"
+                      : "You can enable eco packaging anytime"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setEcoPackaging((prev) => {
+                    const newState = !prev;
+
+                    showToast(
+                      newState
+                        ? "🌿 Eco packaging added (+₹25)"
+                        : "Eco packaging removed",
+                      "success"
+                    );
+
+                    return newState;
+                  });
+                }}
+                className={`px-5 py-2 rounded-xl font-bold transition-all duration-200 active:scale-95 shadow-sm ${ecoPackaging
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+                  }`}
+              >
+                {ecoPackaging ? "Enabled" : "Add"}
+              </button>
+            </div>
+
             {/* ITEMS */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border">
               <h2 className="text-xl font-bold mb-5">Order Items</h2>
