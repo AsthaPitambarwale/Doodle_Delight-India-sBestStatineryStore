@@ -349,7 +349,7 @@ export default function CheckoutPage({
 
                 <button
                   onClick={() =>
-                    navigate("/account", {
+                    navigate("/my-account", {
                       state: {
                         activeTab: "addresses",
                       },
@@ -379,7 +379,13 @@ export default function CheckoutPage({
                   <p className="text-slate-500">No saved addresses found</p>
 
                   <button
-                    onClick={() => navigate("/account")}
+                    onClick={() =>
+                      navigate("/my-account", {
+                        state: {
+                          activeTab: "addresses",
+                        },
+                      })
+                    }
                     className="mt-4 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-semibold"
                   >
                     Add Address
