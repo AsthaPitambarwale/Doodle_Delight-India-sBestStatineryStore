@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 
 import { useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { AddressManager } from "../components/AddressManager";
 import OrderDetailsModal from "../components/OrderDetailsModal";
 
@@ -56,19 +55,9 @@ export function MyAccount({
   onRefreshOrders,
   onPreviewInvoice,
 }: MyAccountProps) {
-
-  const location = useLocation();
-
   const [activeTab, setActiveTab] = useState<
     "overview" | "orders" | "addresses" | "wishlist" | "settings"
-  >(
-    (location.state?.activeTab as
-      | "overview"
-      | "orders"
-      | "addresses"
-      | "wishlist"
-      | "settings") || "overview"
-  );
+  >("overview");
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user || {});
@@ -314,9 +303,10 @@ export function MyAccount({
                         px-4 py-4 rounded-2xl
                         transition-all
                         font-semibold
-                        ${activeTab === tab.key
-                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
-                          : "hover:bg-orange-50 text-gray-700"
+                        ${
+                          activeTab === tab.key
+                            ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
+                            : "hover:bg-orange-50 text-gray-700"
                         }
                       `}
                     >
@@ -369,9 +359,10 @@ export function MyAccount({
                       className={`
                         px-5 py-3 rounded-2xl whitespace-nowrap
                         font-semibold capitalize
-                        ${activeTab === tab
-                          ? "bg-orange-500 text-white"
-                          : "bg-white border"
+                        ${
+                          activeTab === tab
+                            ? "bg-orange-500 text-white"
+                            : "bg-white border"
                         }
                       `}
                     >
@@ -620,12 +611,12 @@ export function MyAccount({
 
                                 {(order.status === "placed" ||
                                   order.status === "paid") && (
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCancelOrder(id);
-                                      }}
-                                      className="
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCancelOrder(id);
+                                    }}
+                                    className="
                                       flex-1
                                       bg-red-500 hover:bg-red-600
                                       text-white
@@ -633,10 +624,10 @@ export function MyAccount({
                                       font-bold
                                       transition-all
                                     "
-                                    >
-                                      Cancel
-                                    </button>
-                                  )}
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
 
                                 {order.status === "delivered" && (
                                   <button
@@ -955,9 +946,10 @@ export function MyAccount({
               backdrop-blur-xl
               font-bold
               animate-in fade-in slide-in-from-top
-              ${toast.type === "success"
-                ? "bg-green-50 text-green-700 border-green-200"
-                : "bg-red-50 text-red-700 border-red-200"
+              ${
+                toast.type === "success"
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : "bg-red-50 text-red-700 border-red-200"
               }
             `}
           >

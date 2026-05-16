@@ -10,8 +10,10 @@ import {
   Tag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AddressManager } from "../components/AddressManager";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
+const [showAddressManager, setShowAddressManager] = useState(false);
 
 const AVAILABLE_COUPONS = [
   {
@@ -346,19 +348,6 @@ export default function CheckoutPage({
                     Select where you want your order delivered
                   </p>
                 </div>
-
-                <button
-                  onClick={() =>
-                    navigate("/my-account", {
-                      state: {
-                        activeTab: "addresses",
-                      },
-                    })
-                  }
-                  className="text-orange-500 font-semibold text-sm hover:text-orange-600 transition"
-                >
-                  Manage
-                </button>
               </div>
 
               {addressLoading ? (
@@ -379,13 +368,7 @@ export default function CheckoutPage({
                   <p className="text-slate-500">No saved addresses found</p>
 
                   <button
-                    onClick={() =>
-                      navigate("/my-account", {
-                        state: {
-                          activeTab: "addresses",
-                        },
-                      })
-                    }
+                    onClick={() => setShowAddressManager(true)}
                     className="mt-4 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-semibold"
                   >
                     Add Address
@@ -814,6 +797,16 @@ export default function CheckoutPage({
         </div>
       </div>
 
+      {showAddressManager && (
+        <AddressManager
+          user={user}
+          onClose={() => {
+            setShowAddressManager(false);
+            addressInitialized.current = false;
+          }}
+        />
+      )}
+      
       {/* SUCCESS MODAL */}
       {orderSuccess && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]">
