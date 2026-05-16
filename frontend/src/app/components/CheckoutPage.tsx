@@ -12,7 +12,6 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
-const [showAddressManager, setShowAddressManager] = useState(false);
 
 const AVAILABLE_COUPONS = [
   {
